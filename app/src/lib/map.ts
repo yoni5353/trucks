@@ -10,6 +10,7 @@ import { Style, Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
 import { clusterStyle, entityStyle, selectedEntityStyle } from "./styles";
+import { getTileLayer } from "./rasters";
 
 type FeatureId = string | number;
 const initStore = () =>
@@ -40,12 +41,7 @@ export function initMap() {
 
     const map = new Map({
         target: undefined,
-        layers: [
-            new TileLayer({
-                source: new OSM(),
-            }),
-            clusters,
-        ],
+        layers: [getTileLayer(), clusters],
         view: new View({
             center: fromLonLat([35, 31]),
             zoom: 7.5,
