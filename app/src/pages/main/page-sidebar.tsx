@@ -1,3 +1,4 @@
+import { Map } from "ol";
 import {
     Sidebar,
     SidebarContent,
@@ -8,25 +9,48 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { addFeature } from "@/lib/map";
+import type VectorSource from "ol/source/Vector";
+import type { Cluster } from "ol/source";
+import { useState } from "react";
 
-export function PageSidebar({ onIdk }) {
+export function PageSidebar({
+    map,
+    entities,
+    entitiesCluster,
+}: {
+    map: Map;
+    entities: VectorSource;
+    entitiesCluster: Cluster;
+}) {
+    const [, _setCounter] = useState(0);
+    const rerender = () => _setCounter((c) => c + 1);
+
     return (
         <Sidebar side="right">
             <SidebarContent>
                 <SidebarGroup>
-                    {/* <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <SidebarGroupLabel>דיבוג</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <div>idk</div>
+                                <SidebarMenuButton asChild onClick={() => addFeature(entities)}>
+                                    <div>addFeature</div>
                                 </SidebarMenuButton>
-                                <SidebarMenuButton asChild>
-                                    <div>idk</div>
+                                <SidebarMenuButton
+                                    asChild
+                                    onClick={() => {
+                                        entitiesCluster.setDistance(50);
+                                        rerender();
+                                    }}
+                                >
+                                    <div>
+                                        change cluster distance - {entitiesCluster.getDistance()}
+                                    </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         </SidebarMenu>
-                    </SidebarGroupContent> */}
+                    </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
         </Sidebar>

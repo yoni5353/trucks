@@ -25,7 +25,6 @@ export type MapStore = ReturnType<typeof initStore>;
 
 export function initMap() {
     const entities = new VectorSource();
-    const entitiesLayer = new VectorLayer({ source: entities });
 
     const entitiesCluster = new Cluster({
         distance: 10,
@@ -46,11 +45,12 @@ export function initMap() {
             center: fromLonLat([35, 31]),
             zoom: 7.5,
         }),
+        controls: [],
     });
 
     const { select } = initSelectInteractions(map, store, entities);
 
-    return { map, select, entities, entitiesLayer, store };
+    return { map, select, entities, entitiesCluster, store };
 }
 
 /**

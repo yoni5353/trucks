@@ -6,12 +6,11 @@ import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer";
 import { useQuery } from "@tanstack/react-query";
 import { entitiesQuery } from "@/lib/requests";
-import { useStore } from "zustand";
 
 export default function Page() {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const [{ map, select, entities, store }] = useState(initMap);
+    const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
 
     const { data: entitiesData } = useQuery(entitiesQuery);
     useEffect(() => {
@@ -23,21 +22,19 @@ export default function Page() {
 
     return (
         <>
-            <SidebarProvider className="flex h-screen flex-col">
+            <SidebarProvider className="flex h-screen flex-col" dir="rtl">
                 <SidebarInset>
                     <div className="flex h-full w-full flex-col">
-                        <button onClick={() => addFeature(entities)}>hi</button>
+                        <OLMap map={map} select={select} onOpenDrawer={() => setDrawerOpen(true)} />
                         <PageDrawer
                             store={store}
                             open={drawerOpen}
                             onOpenChange={setDrawerOpen}
                             onClose={() => setDrawerOpen(false)}
                         />
-                        {/* {selectedEntities} */}
-                        <OLMap map={map} select={select} onOpenDrawer={() => setDrawerOpen(true)} />
                     </div>
                 </SidebarInset>
-                <PageSidebar onIdk={undefined} />
+                <PageSidebar map={map} entities={entities} entitiesCluster={entitiesCluster} />
             </SidebarProvider>
         </>
     );

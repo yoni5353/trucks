@@ -55,10 +55,7 @@ export function OLMap({
 
     return (
         <>
-            <div
-                ref={mapRef}
-                className="h-full w-full overflow-hidden rounded-lg border border-gray-300"
-            />
+            <div ref={mapRef} className="h-full w-full overflow-hidden" />
             <div ref={tooltipRef} className="tooltip-thing absolute">
                 <div
                     className={`absolute bottom-full left-1/2 mb-4 -translate-x-1/2 transition-all duration-300 ${
@@ -67,7 +64,7 @@ export function OLMap({
                             : "pointer-events-none translate-y-2 opacity-0"
                     }`}
                 >
-                    <div className="bg-card border-border flex gap-2 rounded-xl border p-3 shadow-2xl backdrop-blur-sm">
+                    <div className="flex gap-2 rounded-xl border border-border bg-card p-3 shadow-2xl backdrop-blur-sm">
                         <Button
                             size="sm"
                             variant="ghost"
@@ -85,7 +82,7 @@ export function OLMap({
                     </div>
                     {/* Arrow pointing down */}
                     <div className="absolute left-1/2 top-full -mt-px -translate-x-1/2">
-                        <div className="bg-card border-border h-3 w-3 rotate-45 border-b border-r" />
+                        <div className="h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
                     </div>
                 </div>
             </div>
