@@ -6,7 +6,7 @@ export const entityStyle = new Style({
     image: new CircleStyle({
         radius: 8,
         fill: new Fill({ color: "hsl(95 25% 45%)" }),
-        stroke: new Stroke({ color: "lightgray", width: 2 }),
+        stroke: new Stroke({ color: "silver", width: 2 }),
     }),
 });
 
@@ -14,7 +14,7 @@ export const selectedEntityStyle = new Style({
     image: new CircleStyle({
         radius: 10,
         fill: new Fill({ color: "hsl(95 25% 45%)" }),
-        stroke: new Stroke({ color: "lightgray", width: 2 }),
+        stroke: new Stroke({ color: "silver", width: 2 }),
     }),
 });
 

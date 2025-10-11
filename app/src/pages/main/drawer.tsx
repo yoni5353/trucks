@@ -21,7 +21,6 @@ export function PageDrawer({ store }: { store: MapStore }) {
                     </div>
                     <div className="flex-1">
                         <p className="text-muted-foreground">{location.description}</p>
-                        what
                         {JSON.stringify(selectedFeatures)}
                     </div>
                 </div>

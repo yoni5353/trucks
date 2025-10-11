@@ -7,9 +7,11 @@ import { PageDrawer } from "./drawer";
 import { useQuery } from "@tanstack/react-query";
 import { entitiesQuery } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { cn } from "@/lib/utils";
 
 export default function Page() {
     const drawerRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
+    const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
     const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
 
@@ -36,13 +38,17 @@ export default function Page() {
                             </div>
                         </ResizablePanel>
                         <ResizableHandle
-                            onDoubleClick={() =>
-                                drawerRef.current?.isCollapsed()
+                            className="hover:after:bg-sidebar-border"
+                            onClick={() => {
+                                setIsDrawerTransitioning(true);
+                                return drawerRef.current?.isCollapsed()
                                     ? drawerRef.current?.expand()
-                                    : drawerRef.current?.collapse()
-                            }
+                                    : drawerRef.current?.collapse();
+                            }}
                         />
                         <ResizablePanel
+                            className={cn(isDrawerTranstioning && "transition-all duration-100")}
+                            onTransitionEnd={() => setIsDrawerTransitioning(false)}
                             ref={drawerRef}
                             order={2}
                             collapsible
