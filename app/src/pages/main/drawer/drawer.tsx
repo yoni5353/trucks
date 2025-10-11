@@ -14,7 +14,7 @@ export function PageDrawer({ store }: { store: MapStore }) {
             defaultValue="details"
             dir="rtl"
         >
-            <TabsList className="h-min w-min">
+            <TabsList className="h-min w-min bg-secondary/50">
                 <TabsTrigger value="details">פרטים</TabsTrigger>
                 <TabsTrigger value="other-details">פירוט</TabsTrigger>
             </TabsList>

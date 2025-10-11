@@ -52,8 +52,8 @@ export default function Page() {
                             ref={drawerRef}
                             order={2}
                             collapsible
-                            minSize={2}
-                            collapsedSize={2}
+                            minSize={1}
+                            collapsedSize={1}
                             defaultSize={40}
                             maxSize={60}
                         >
