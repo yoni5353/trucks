@@ -11,18 +11,16 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar";
-import { addFeature } from "@/lib/map";
+import { addRandomEntity } from "@/lib/map";
 import type VectorSource from "ol/source/Vector";
 import type { Cluster } from "ol/source";
 import { useState } from "react";
-import { BotIcon, Truck, TruckElectric, TruckElectricIcon } from "lucide-react";
+import { BotIcon, TruckElectricIcon } from "lucide-react";
 
 export function PageSidebar({
-    map,
     entities,
     entitiesCluster,
 }: {
-    map: Map;
     entities: VectorSource;
     entitiesCluster: Cluster;
 }) {
@@ -55,9 +53,9 @@ export function PageSidebar({
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => addFeature(entities)}>
+                                <SidebarMenuButton onClick={() => addRandomEntity(entities)}>
                                     <BotIcon />
-                                    <div>add feature</div>
+                                    <div>add entity</div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                             <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">

@@ -85,12 +85,14 @@ function initSelectInteractions(map: Map, store: MapStore, source: VectorSource)
     return { select, dragBox };
 }
 
-export function addFeature(source: VectorSource) {
+export function addRandomEntity(source: VectorSource) {
     const feature = new Feature({
         geometry: new Point(fromLonLat([34.8 + Math.random() * 0.1, 31.2 + Math.random() * 0.1])),
     });
 
     source.addFeature(feature);
+    feature.setStyle(entityStyle);
+    feature.setId(`entity-${Math.floor(Math.random() * 10000)}`);
 }
 
 export function addEntities(

@@ -3,7 +3,7 @@ import { PageSidebar } from "./page-sidebar";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import { addEntities, initMap } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
-import { PageDrawer } from "./drawer";
+import { PageDrawer } from "./drawer/drawer";
 import { useQuery } from "@tanstack/react-query";
 import { entitiesQuery } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -61,7 +61,7 @@ export default function Page() {
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </SidebarInset>
-                <PageSidebar map={map} entities={entities} entitiesCluster={entitiesCluster} />
+                <PageSidebar entities={entities} entitiesCluster={entitiesCluster} />
             </SidebarProvider>
         </>
     );

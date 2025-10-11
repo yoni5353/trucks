@@ -5,7 +5,7 @@ import type { StyleLike } from "ol/style/Style";
 export const entityStyle = new Style({
     image: new CircleStyle({
         radius: 8,
-        fill: new Fill({ color: "hsl(95 25% 45%)" }),
+        fill: new Fill({ color: "hsl(97 22% 40%)" }),
         stroke: new Stroke({ color: "silver", width: 2 }),
     }),
 });
