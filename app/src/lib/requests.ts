@@ -1,5 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const url = import.meta.env.VITE_BE_URL || "http://localhost:8080";
+
 export const entitiesQuery = queryOptions({
     queryKey: ["entities"],
     queryFn: async () => {

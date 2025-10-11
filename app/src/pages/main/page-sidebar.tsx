@@ -41,8 +41,12 @@ export function PageSidebar({
                             <TruckElectricIcon className="size-4" />
                         </div>
                         <div className="grid flex-1 text-right text-sm leading-tight">
-                            <span className="truncate font-medium">???</span>
-                            <span className="truncate text-xs">??????</span>
+                            <span className="truncate font-medium">
+                                {import.meta.env.VITE_APP_NAME}
+                            </span>
+                            <span className="truncate text-xs">
+                                {import.meta.env.VITE_APP_DESCRIPTION}
+                            </span>
                         </div>
                     </SidebarMenuButton>
                 </SidebarHeader>
