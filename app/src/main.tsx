@@ -9,7 +9,7 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
         <StrictMode>
             <App />
         </StrictMode>
