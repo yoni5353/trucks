@@ -102,15 +102,7 @@ export function addEntities(
             geometry: new Point(fromLonLat([entity.location[0], entity.location[1]])),
         });
         feature.setId(`${entity.type}-${entity.id}`);
-        feature.setStyle(
-            new Style({
-                image: new CircleStyle({
-                    radius: 8,
-                    fill: new Fill({ color: "#3b82f6" }),
-                    stroke: new Stroke({ color: "white", width: 2 }),
-                }),
-            }),
-        );
+        feature.setStyle(entityStyle);
         return feature;
     });
     source.addFeatures(features);
