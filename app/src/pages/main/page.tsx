@@ -1,14 +1,15 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageSidebar } from "./page-sidebar";
-import { useEffect, useState } from "react";
-import { addEntities, addFeature, initMap } from "@/lib/map";
+import { useEffect, useRef, useState, type ComponentRef } from "react";
+import { addEntities, initMap } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer";
 import { useQuery } from "@tanstack/react-query";
 import { entitiesQuery } from "@/lib/requests";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 export default function Page() {
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const drawerRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
 
     const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
 
@@ -22,17 +23,37 @@ export default function Page() {
 
     return (
         <>
-            <SidebarProvider className="flex h-screen flex-col" dir="rtl">
+            <SidebarProvider className="flex h-screen flex-col">
                 <SidebarInset>
-                    <div className="flex h-full w-full flex-col">
-                        <OLMap map={map} select={select} onOpenDrawer={() => setDrawerOpen(true)} />
-                        <PageDrawer
-                            store={store}
-                            open={drawerOpen}
-                            onOpenChange={setDrawerOpen}
-                            onClose={() => setDrawerOpen(false)}
+                    <ResizablePanelGroup direction="vertical">
+                        <ResizablePanel className="relative" order={1}>
+                            <div className="relative h-screen w-full">
+                                <OLMap
+                                    map={map}
+                                    select={select}
+                                    onOpenDrawer={() => drawerRef?.current?.expand()}
+                                />
+                            </div>
+                        </ResizablePanel>
+                        <ResizableHandle
+                            onDoubleClick={() =>
+                                drawerRef.current?.isCollapsed()
+                                    ? drawerRef.current?.expand()
+                                    : drawerRef.current?.collapse()
+                            }
                         />
-                    </div>
+                        <ResizablePanel
+                            ref={drawerRef}
+                            order={2}
+                            collapsible
+                            minSize={2}
+                            collapsedSize={2}
+                            defaultSize={40}
+                            maxSize={60}
+                        >
+                            <PageDrawer store={store} />
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
                 </SidebarInset>
                 <PageSidebar map={map} entities={entities} entitiesCluster={entitiesCluster} />
             </SidebarProvider>
