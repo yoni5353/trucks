@@ -111,6 +111,30 @@ export const eventsQuery = queryOptions({
                 type: "speeding",
                 timestamp: "2024-01-01T23:00:00Z",
             },
+            {
+                id: "event-13",
+                entityIds: ["truck-7"],
+                type: "speeding",
+                timestamp: "2024-01-01T12:00:00Z",
+            },
+            {
+                id: "event-14",
+                entityIds: ["truck-7"],
+                type: "speeding",
+                timestamp: "2024-01-01T11:30:00Z",
+            },
+            {
+                id: "event-15",
+                entityIds: ["truck-7"],
+                type: "speeding",
+                timestamp: "2024-01-01T12:15:00Z",
+            },
+            {
+                id: "event-16",
+                entityIds: ["truck-7"],
+                type: "speeding",
+                timestamp: "2024-01-01T13:00:00Z",
+            },
         ];
     },
 });
