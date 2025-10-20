@@ -42,11 +42,23 @@ export function MovieTimeline<T extends object>({
                     const minute = 60 * 1000;
                     return Math.round(date.valueOf() / minute) * minute;
                 },
-                ...timelineOptions,
+                // group drag-and-drop ordering
+                groupEditable: { order: true },
+                groupOrder: function (a, b) {
+                    return a.order - b.order;
+                },
+                groupOrderSwap: function (a, b, _groups) {
+                    const v = a.order;
+                    a.order = b.order;
+                    b.order = v;
+                    console.log(a.order, b.order);
+                },
                 // Important workaround-fix for initial loading, see https://github.com/visjs/vis-timeline/issues/1340
                 rollingMode: { follow: false },
                 // temp
                 xss: { disabled: true },
+                // rest
+                ...timelineOptions,
             } satisfies TimelineOptions;
             timelineRef.current = new Timeline(containerRef.current, items, groups, options);
             const timeline = timelineRef.current;

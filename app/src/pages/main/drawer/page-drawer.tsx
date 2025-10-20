@@ -25,7 +25,7 @@ export function PageDrawer({
     return (
         <>
             <Activity mode={viewedEntityId ? "hidden" : "visible"}>
-                <div className="flex h-full items-center justify-center p-4 py-6">
+                <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
                     <MasterTimeline mapStore={store} entities={entities} select={select} />
                 </div>
             </Activity>

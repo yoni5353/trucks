@@ -16,4 +16,5 @@
 
 .vis-labelset .vis-label {
     color: var(--primary);
+    padding-top: 5px; /* Matches line height atm */
 }

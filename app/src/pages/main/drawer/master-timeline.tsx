@@ -9,7 +9,7 @@ import { selectEntities, type MapStore } from "@/lib/map";
 import { useEffect, useMemo, useRef } from "react";
 import type { Timeline } from "vis-timeline";
 // @ts-expect-error no type
-import { ShieldX } from "lucide-static";
+import { ShieldX, SquareKanban } from "lucide-static";
 import { sameValues } from "@/lib/utils";
 
 export function MasterTimeline({
@@ -69,7 +69,9 @@ export function MasterTimeline({
                 if (groups.get(id)) continue;
                 groups.add({
                     id: entityId,
-                    content: entityId,
+                    order: parseInt(entityId.split("-")[1]),
+                    content: `<div class="flex items-center gap-2 justify-center px-4">${entityId}
+                              <button class="text-secondary hover:text-primary">${SquareKanban}</button></div>`,
                 });
             }
         }
