@@ -1,4 +1,5 @@
-import { type MapStore } from "@/lib/map";
+import type Map from "ol/Map";
+import { flyToEntity, type MapStore } from "@/lib/map";
 import { useStore } from "zustand";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -10,17 +11,25 @@ import type VectorSource from "ol/source/Vector";
 import { Activity } from "react";
 
 export function PageDrawer({
+    map,
     store,
     entities,
     select,
     viewedEntityId,
 }: {
+    map: Map;
     store: MapStore;
     entities: VectorSource;
     select: Select;
     viewedEntityId: string | undefined;
 }) {
     const selectedFeatures = useStore(store, (s) => s.selectedEntities);
+
+    const focusEntity = () => {
+        if (viewedEntityId) {
+            flyToEntity(map, entities, viewedEntityId);
+        }
+    };
 
     return (
         <>
@@ -40,7 +49,7 @@ export function PageDrawer({
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
                     <TabsContent value="details" className="p-2">
-                        <EntityDetails selectedFeatures={selectedFeatures} />
+                        <EntityDetails selectedFeatures={selectedFeatures} onFocus={focusEntity} />
                     </TabsContent>
                     <TabsContent value="other-details" className="p-2">
                         <div className="flex gap-4">

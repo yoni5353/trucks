@@ -109,7 +109,6 @@ export function addEntities(
     source.addFeatures(features);
 }
 
-// TODO add fly-to option
 export function selectEntities(select: Select, source: VectorSource, entitiesIds: string[]) {
     const features = source.getFeatures();
     select.getFeatures().clear();
@@ -118,5 +117,14 @@ export function selectEntities(select: Select, source: VectorSource, entitiesIds
         if (feature) {
             select.getFeatures().push(feature);
         }
+    });
+}
+
+export function flyToEntity(map: Map, entities: VectorSource, entityId: string) {
+    const geometry = entities.getFeatureById(entityId)?.getGeometry();
+    if (!geometry) return;
+    map?.getView().fit(geometry, {
+        duration: 1000,
+        maxZoom: 14,
     });
 }

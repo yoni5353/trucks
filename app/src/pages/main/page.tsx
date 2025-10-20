@@ -63,6 +63,7 @@ export default function Page() {
                             maxSize={60}
                         >
                             <PageDrawer
+                                map={map}
                                 store={store}
                                 entities={entities}
                                 select={select}

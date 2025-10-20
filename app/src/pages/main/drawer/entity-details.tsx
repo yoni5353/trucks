@@ -1,6 +1,13 @@
-import { Info, MapPin, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Crosshair, Info, MapPin, TrendingUp } from "lucide-react";
 
-export function EntityDetails({ selectedFeatures }: { selectedFeatures: any[] }) {
+export function EntityDetails({
+    selectedFeatures,
+    onFocus,
+}: {
+    selectedFeatures: any[];
+    onFocus?: () => void;
+}) {
     const location = {
         name: "Sample Location",
         description: "This is a sample description for the location.",
@@ -21,6 +28,9 @@ export function EntityDetails({ selectedFeatures }: { selectedFeatures: any[] })
                 <div className="flex-1">
                     <p className="text-muted-foreground">מראה פרטים על:</p>
                     {JSON.stringify(selectedFeatures)}
+                    <Button variant="ghost" onClick={onFocus} className="ml-auto">
+                        <Crosshair />
+                    </Button>
                 </div>
             </div>
             <div className="mb-6 grid grid-cols-2 gap-4">
