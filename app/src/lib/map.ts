@@ -1,15 +1,23 @@
 import Map from "ol/Map";
 import View from "ol/View";
 import { DragBox, Select } from "ol/interaction";
-import { Vector as VectorLayer } from "ol/layer";
+import { Layer, Vector as VectorLayer } from "ol/layer";
 import { Cluster, Vector as VectorSource } from "ol/source";
 import { fromLonLat } from "ol/proj";
-import { Point } from "ol/geom";
+import { LineString, Point } from "ol/geom";
 import { Feature } from "ol";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
-import { clusterStyle, entityStyle, selectedEntityStyle } from "./map-styles";
+import { clusterStyle, entityStyle, selectedEntityStyle, historyArrowStyle } from "./map-styles";
 import { getTileLayer } from "./rasters";
+
+// Feature Ids Breakdown:
+// - Entities: Regular entities on the map
+//     FeatureId = {EntityType}-{EntityId}
+//     Clusteres don't have id.
+// - Histories: Histories of entities locations
+//     FeatureId of points = {EntityFeatureId}-{Time}
+//     FeatureId of lines = {EntityFeatureId}-{Time1}-{Time2}
 
 type FeatureId = string | number;
 const initStore = () =>
@@ -24,7 +32,6 @@ export type MapStore = ReturnType<typeof initStore>;
 
 export function initMap() {
     const entities = new VectorSource();
-
     const entitiesCluster = new Cluster({
         distance: 10,
         minDistance: 5,
@@ -35,11 +42,14 @@ export function initMap() {
         style: clusterStyle,
     });
 
+    const histories = new VectorSource();
+    const historiesLayer = new VectorLayer({ source: histories });
+
     const store: MapStore = initStore();
 
     const map = new Map({
         target: undefined,
-        layers: [getTileLayer(), clusters],
+        layers: [getTileLayer(), clusters, historiesLayer],
         view: new View({
             center: fromLonLat([35, 31]),
             zoom: 7.5,
@@ -47,19 +57,29 @@ export function initMap() {
         controls: [],
     });
 
-    const { select } = initSelectInteractions(map, store, entities);
+    const { select } = initSelectInteractions(map, store, entities, {
+        excludeLayers: [historiesLayer],
+    });
 
-    return { map, select, entities, entitiesCluster, store };
+    return { map, select, entities, entitiesCluster, histories, store };
 }
 
 /**
  * Select emits the "select" only on single selections. It is possible to listen to dragbox
  * events by listening to the features Collection with the "add" and "remove" events.
  */
-function initSelectInteractions(map: Map, store: MapStore, source: VectorSource) {
+function initSelectInteractions(
+    map: Map,
+    store: MapStore,
+    source: VectorSource,
+    { excludeLayers }: { excludeLayers?: Layer[] },
+) {
     const select = new Select({
         toggleCondition: platformModifierKeyOnly,
         style: selectedEntityStyle,
+        filter: (_feature, layer) => {
+            return !excludeLayers?.includes(layer);
+        },
     });
     map.addInteraction(select);
     const selectedFeatures = select.getFeatures();
@@ -127,4 +147,52 @@ export function flyToEntity(map: Map, entities: VectorSource, entityId: string) 
         duration: 1000,
         maxZoom: 14,
     });
+}
+
+// ENTITY HISTORY
+
+/* Registers all given histories for given entities, drawing previous points and arrows */
+export function registerHistoryOfEntities(
+    histories: VectorSource,
+    data: { [featureId: string]: Array<{ coords: number[]; time: string }> },
+) {
+    histories.clear();
+    const features: Feature[] = [];
+    Object.entries(data).forEach(([featureId, points]) => {
+        points.sort((a, b) => a.time.localeCompare(b.time));
+        const strength = 0.5;
+        const strengthStep = (1 - strength) / (points.length - 1);
+
+        // Add previous points
+        points.forEach((point, index) => {
+            const opacity = strength + index * strengthStep;
+            const feature = new Feature({
+                geometry: new Point(fromLonLat([point.coords[0], point.coords[1]])),
+            });
+            feature.setId(`${featureId}-${point.time}`);
+            const style = entityStyle.clone();
+            style.getImage()?.setOpacity(opacity);
+            feature.setStyle(style);
+            features.push(feature);
+        });
+        // Connect points with arrows
+        for (let i = 0; i < points.length - 1; i++) {
+            const start = points[i];
+            const end = points[i + 1];
+            const arrow = new Feature({
+                geometry: new LineString([
+                    fromLonLat([start.coords[0], start.coords[1]]),
+                    fromLonLat([end.coords[0], end.coords[1]]),
+                ]),
+            });
+            arrow.setId(`${featureId}-${start.time}-${end.time}`);
+            arrow.setStyle(historyArrowStyle);
+            features.push(arrow);
+        }
+    });
+    histories.addFeatures(features);
+}
+
+export function clearAllHistory(histories: VectorSource) {
+    histories.clear();
 }

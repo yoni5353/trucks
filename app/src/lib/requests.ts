@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { QueryClient, queryOptions } from "@tanstack/react-query";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const url = import.meta.env.VITE_BE_URL || "http://localhost:8080";
@@ -7,15 +7,37 @@ export const entitiesQuery = queryOptions({
     queryKey: ["entities"],
     queryFn: async () => {
         return [
-            { type: "truck", id: 1, name: "Entity 1", location: [34.8, 31.2] },
-            { type: "truck", id: 2, name: "Entity 2", location: [34.9, 31.3] },
-            { type: "truck", id: 3, name: "Entity 3", location: [35.01, 31.4] },
-            { type: "truck", id: 4, name: "Entity 4", location: [34.85, 31.25] },
-            { type: "truck", id: 5, name: "Entity 5", location: [34.95, 31.32] },
-            { type: "truck", id: 6, name: "Entity 6", location: [34.84, 31.28] },
+            { type: "truck", id: "1", name: "Entity 1", location: [34.8, 31.2] },
+            { type: "truck", id: "2", name: "Entity 2", location: [34.9, 31.3] },
+            { type: "truck", id: "3", name: "Entity 3", location: [35.01, 31.4] },
+            { type: "truck", id: "4", name: "Entity 4", location: [34.85, 31.25] },
+            { type: "truck", id: "5", name: "Entity 5", location: [34.95, 31.32] },
+            { type: "truck", id: "6", name: "Entity 6", location: [34.84, 31.28] },
+            {
+                type: "truck",
+                id: "7",
+                name: "Fast Truck",
+                location: [34.8, 31.28],
+                history: [
+                    { coords: [34.7818, 31.0853], time: "2025-10-20T10:00:00Z" },
+                    { coords: [34.7418, 31.153], time: "2025-10-20T12:00:00Z" },
+                    { coords: [34.7618, 31.28], time: "2025-10-20T15:00:00Z" },
+                    { coords: [34.8, 31.28], time: "2025-10-20T18:00:00Z" },
+                ],
+            },
         ];
     },
 });
+
+export const getHistoryOfEntity = async (
+    queryClient: QueryClient,
+    entityType: string,
+    entityId: string,
+) => {
+    return (await queryClient.fetchQuery(entitiesQuery)).find(
+        (entity) => entity.id === entityId && entity.type === entityType,
+    )?.history;
+};
 
 export const eventsQuery = queryOptions({
     queryKey: ["events"],

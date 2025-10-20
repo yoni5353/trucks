@@ -1,29 +1,45 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageSidebar } from "./page-sidebar";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
-import { addEntities, initMap } from "@/lib/map";
+import { addEntities, clearAllHistory, initMap, registerHistoryOfEntities } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer/page-drawer";
-import { useQuery } from "@tanstack/react-query";
-import { entitiesQuery } from "@/lib/requests";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { entitiesQuery, getHistoryOfEntity } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 
 export default function Page() {
+    const queryClient = useQueryClient();
     const drawerRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
-    const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
-
-    const [focusedEntityId, setViewedEntityId] = useState<string>();
-
+    const [{ map, select, entities, histories, entitiesCluster, store }] = useState(initMap);
     const { data: entitiesData } = useQuery(entitiesQuery);
-    useEffect(() => {
-        if (entitiesData) {
-            entities.clear();
-            addEntities(entities, entitiesData);
+    useEffect(
+        function loadEntities() {
+            if (entitiesData) {
+                entities.clear();
+                addEntities(entities, entitiesData);
+            }
+        },
+        [entitiesData, entities],
+    );
+
+    const [focusedFeatureId, _setFoucsedFeatureId] = useState<string>();
+    const setFocusedFeatureId = async (id: string | undefined) => {
+        _setFoucsedFeatureId(id);
+
+        if (id) {
+            const [type, entityId] = id?.split("-", 2) as [string, string];
+            const focusedFeatureHistory = await getHistoryOfEntity(queryClient, type, entityId);
+            if (focusedFeatureHistory) {
+                registerHistoryOfEntities(histories, { [id]: focusedFeatureHistory });
+            }
+        } else {
+            clearAllHistory(histories);
         }
-    }, [entitiesData, entities]);
+    };
 
     return (
         <>
@@ -36,7 +52,7 @@ export default function Page() {
                                     map={map}
                                     select={select}
                                     onViewEntity={(entityId: string | undefined) => {
-                                        setViewedEntityId(entityId);
+                                        setFocusedFeatureId(entityId);
                                         if (entityId) drawerRef?.current?.expand();
                                     }}
                                 />
@@ -67,7 +83,7 @@ export default function Page() {
                                 store={store}
                                 entities={entities}
                                 select={select}
-                                focusedEntityId={focusedEntityId}
+                                focusedEntityId={focusedFeatureId}
                             />
                         </ResizablePanel>
                     </ResizablePanelGroup>
