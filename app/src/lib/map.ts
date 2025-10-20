@@ -146,6 +146,7 @@ export function flyToEntity(map: Map, entities: VectorSource, entityId: string) 
     map?.getView().fit(geometry, {
         duration: 1000,
         maxZoom: 14,
+        // TODO padding? to zoom in middle of map pane not disregarding the drawer and sidebar
     });
 }
 
