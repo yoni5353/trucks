@@ -6,7 +6,6 @@ import { Cluster, OSM, Vector as VectorSource, XYZ } from "ol/source";
 import { fromLonLat } from "ol/proj";
 import { Point } from "ol/geom";
 import { Feature } from "ol";
-import { Style, Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
 import { clusterStyle, entityStyle, selectedEntityStyle } from "./styles";
@@ -108,4 +107,18 @@ export function addEntities(
         return feature;
     });
     source.addFeatures(features);
+}
+
+// TODO add fly-to option
+export function selectEntities(select: Select, source: VectorSource, entitiesIds: string[]) {
+    const features = source.getFeatures();
+    select.getFeatures().clear();
+    setTimeout(() => {
+        entitiesIds.forEach((id) => {
+            const feature = features.find((f) => f.getId() === id);
+            if (feature) {
+                select.getFeatures().push(feature);
+            }
+        });
+    });
 }

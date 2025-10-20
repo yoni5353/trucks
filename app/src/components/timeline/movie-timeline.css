@@ -1,0 +1,19 @@
+.vis-timeline,
+.vis-timeline .vis-group,
+.vis-timeline .vis-panel,
+.vis-time-axis .vis-grid.vis-vertical,
+.vis-timeline .vis-label {
+    border-color: gray;
+}
+
+.vis-item.vis-line,
+.vis-item.vis-dot {
+    display: none;
+}
+.vis-item.vis-box {
+    border-radius: 20px;
+}
+
+.vis-labelset .vis-label {
+    color: var(--primary);
+}

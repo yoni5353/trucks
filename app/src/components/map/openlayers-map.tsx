@@ -7,20 +7,22 @@ import { Button } from "../ui/button";
 import { CopyIcon, Download, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type EntityId = string;
+
 export function OLMap({
     map,
     select,
-    onOpenDrawer,
+    onViewEntity,
 }: {
     map: Map;
     select?: Select;
-    onOpenDrawer: () => void;
+    onViewEntity: (entityId: string | undefined) => void;
 }) {
     const mapRef = useRef<HTMLDivElement | null>(null);
 
     const tooltipRef = useRef<HTMLDivElement | null>(null);
     const tooltipInstanceRef = useRef<Overlay | null>(null);
-    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [tooltipEntityId, setTooltipEntityId] = useState<EntityId>();
 
     useEffect(() => {
         if (mapRef.current) {
@@ -44,10 +46,11 @@ export function OLMap({
                 if (e.selected.length === 1 && selectedFeatures.getLength() === 1) {
                     const coordinates = e.selected[0].getGeometry()?.getCoordinates();
                     tooltip.setPosition(coordinates);
-                    setTooltipOpen(true);
+                    setTooltipEntityId(e.selected[0].get("features")[0].getId());
                 } else {
                     tooltip.setPosition(undefined);
-                    setTooltipOpen(false);
+                    setTooltipEntityId(undefined);
+                    onViewEntity(undefined);
                 }
             });
 
@@ -56,7 +59,7 @@ export function OLMap({
                 map.removeOverlay(tooltip);
             };
         }
-    }, [map, select]);
+    }, [map, onViewEntity, select]);
 
     return (
         <>
@@ -65,7 +68,7 @@ export function OLMap({
                 <div
                     className={cn(
                         `absolute -translate-x-1/2 transition-all duration-300`,
-                        tooltipOpen
+                        tooltipEntityId
                             ? "pointer-events-auto translate-y-0 opacity-100"
                             : "pointer-events-none translate-y-2 opacity-0",
                     )}
@@ -75,7 +78,7 @@ export function OLMap({
                             size="sm"
                             variant="ghost"
                             className="h-9 w-9 p-0"
-                            onClick={onOpenDrawer}
+                            onClick={() => tooltipEntityId && onViewEntity(tooltipEntityId)}
                         >
                             <Eye className="h-4 w-4" />
                         </Button>

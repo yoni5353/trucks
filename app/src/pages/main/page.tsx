@@ -3,7 +3,7 @@ import { PageSidebar } from "./page-sidebar";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import { addEntities, initMap } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
-import { PageDrawer } from "./drawer/drawer";
+import { PageDrawer } from "./drawer/page-drawer";
 import { useQuery } from "@tanstack/react-query";
 import { entitiesQuery } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -14,6 +14,8 @@ export default function Page() {
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
     const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
+
+    const [viewedEntityId, setViewedEntityId] = useState<string>();
 
     const { data: entitiesData } = useQuery(entitiesQuery);
     useEffect(() => {
@@ -33,7 +35,10 @@ export default function Page() {
                                 <OLMap
                                     map={map}
                                     select={select}
-                                    onOpenDrawer={() => drawerRef?.current?.expand()}
+                                    onViewEntity={(entityId: string | undefined) => {
+                                        setViewedEntityId(entityId);
+                                        if (entityId) drawerRef?.current?.expand();
+                                    }}
                                 />
                             </div>
                         </ResizablePanel>
@@ -57,7 +62,12 @@ export default function Page() {
                             defaultSize={40}
                             maxSize={60}
                         >
-                            <PageDrawer store={store} />
+                            <PageDrawer
+                                store={store}
+                                entities={entities}
+                                select={select}
+                                viewedEntityId={viewedEntityId}
+                            />
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </SidebarInset>
