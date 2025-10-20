@@ -84,6 +84,7 @@ export default function Page() {
                                 entities={entities}
                                 select={select}
                                 focusedEntityId={focusedFeatureId}
+                                onFocusEntity={setFocusedFeatureId}
                             />
                         </ResizablePanel>
                     </ResizablePanelGroup>

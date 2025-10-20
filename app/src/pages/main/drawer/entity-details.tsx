@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Crosshair, Info, MapPin, TrendingUp } from "lucide-react";
 
 export function EntityDetails({
-    selectedFeatures,
+    focusedEntityId,
     onFocus,
 }: {
-    selectedFeatures: any[];
+    focusedEntityId: string;
     onFocus?: () => void;
 }) {
     const location = {
@@ -27,7 +27,7 @@ export function EntityDetails({
                 </div>
                 <div className="flex-1">
                     <p className="text-muted-foreground">מראה פרטים על:</p>
-                    {JSON.stringify(selectedFeatures)}
+                    {focusedEntityId}
                     <Button variant="ghost" onClick={onFocus} className="ml-auto">
                         <Crosshair />
                     </Button>

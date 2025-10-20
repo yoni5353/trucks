@@ -16,16 +16,18 @@ export function PageDrawer({
     entities,
     select,
     focusedEntityId,
+    onFocusEntity,
 }: {
     map: Map;
     store: MapStore;
     entities: VectorSource;
     select: Select;
     focusedEntityId: string | undefined;
+    onFocusEntity: (entityId: string) => void;
 }) {
     const selectedFeatures = useStore(store, (s) => s.selectedEntities);
 
-    const focusEntity = () => {
+    const focusCurrentEntity = () => {
         if (focusedEntityId) {
             flyToEntity(map, entities, focusedEntityId);
         }
@@ -35,7 +37,12 @@ export function PageDrawer({
         <>
             <Activity mode={focusedEntityId ? "hidden" : "visible"}>
                 <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
-                    <MasterTimeline mapStore={store} entities={entities} select={select} />
+                    <MasterTimeline
+                        mapStore={store}
+                        entities={entities}
+                        select={select}
+                        onFocusEntity={onFocusEntity}
+                    />
                 </div>
             </Activity>
             <Activity mode={focusedEntityId ? "visible" : "hidden"}>
@@ -49,7 +56,10 @@ export function PageDrawer({
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
                     <TabsContent value="details" className="p-2">
-                        <EntityDetails selectedFeatures={selectedFeatures} onFocus={focusEntity} />
+                        <EntityDetails
+                            focusedEntityId={focusedEntityId}
+                            onFocus={focusCurrentEntity}
+                        />
                     </TabsContent>
                     <TabsContent value="other-details" className="p-2">
                         <div className="flex gap-4">

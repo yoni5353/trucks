@@ -16,36 +16,58 @@ export function MasterTimeline({
     mapStore,
     entities,
     select,
+    onFocusEntity,
 }: {
     mapStore: MapStore;
     entities: VectorSource;
     select: Select;
+    onFocusEntity?: (entityId: string) => void;
 }) {
     const { data: events } = useQuery(eventsQuery);
 
     const timelineRef = useRef<Timeline | null>(null);
 
-    useEffect(function focusEntitiesOnMapEntitySelection() {
-        return mapStore.subscribe((state, prev) => {
-            if (state.selectedEntities !== prev.selectedEntities) {
-                if (state.selectedEntities.length === 0) {
-                    timelineRef.current?.setSelection([]);
-                    return;
+    useEffect(
+        function focusEntitiesOnMapEntitySelection() {
+            return mapStore.subscribe((state, prev) => {
+                if (state.selectedEntities !== prev.selectedEntities) {
+                    if (state.selectedEntities.length === 0) {
+                        timelineRef.current?.setSelection([]);
+                        return;
+                    }
+                    const relatedEventsIds = events
+                        ?.filter((event) =>
+                            event.entityIds.find((entityId) =>
+                                state.selectedEntities.includes(entityId),
+                            ),
+                        )
+                        .map((e) => e.id);
+                    const currentSelection = timelineRef.current?.getSelection() as string[];
+                    if (relatedEventsIds && !sameValues(relatedEventsIds, currentSelection)) {
+                        timelineRef.current?.setSelection(relatedEventsIds);
+                    }
                 }
-                const relatedEventsIds = events
-                    ?.filter((event) =>
-                        event.entityIds.find((entityId) =>
-                            state.selectedEntities.includes(entityId),
-                        ),
-                    )
-                    .map((e) => e.id);
-                const currentSelection = timelineRef.current?.getSelection() as string[];
-                if (relatedEventsIds && !sameValues(relatedEventsIds, currentSelection)) {
-                    timelineRef.current?.setSelection(relatedEventsIds);
-                }
+            });
+        },
+        [events, mapStore],
+    );
+
+    useEffect(
+        function focusEntityOnGroupClick() {
+            if (timelineRef.current && onFocusEntity) {
+                timelineRef.current.on("click", (properties) => {
+                    const event = timelineRef.current?.getEventProperties(properties.event);
+                    if (event && event.what === "group-label") {
+                        const groupId = event.group;
+                        if (groupId) {
+                            onFocusEntity(groupId.toString());
+                        }
+                    }
+                });
             }
-        });
-    });
+        },
+        [timelineRef, events, onFocusEntity],
+    );
 
     const items = useMemo(() => new DataSet(), []);
     if (events && items.getIds().length === 0) {

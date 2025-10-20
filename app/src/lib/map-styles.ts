@@ -79,7 +79,6 @@ export function historyArrowStyle(feature: Feature<Geometry>, _resolution: unkno
         const dx = x2 - x1;
         const dy = y2 - y1;
         const rotation = Math.atan2(dy, dx);
-        console.log(x1, y1, x2, y2, rotation);
 
         styles.push(arrowHeadStyle(x2, y2, -rotation));
     }

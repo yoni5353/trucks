@@ -51,7 +51,6 @@ export function MovieTimeline<T extends object>({
                     const v = a.order;
                     a.order = b.order;
                     b.order = v;
-                    console.log(a.order, b.order);
                 },
                 // Important workaround-fix for initial loading, see https://github.com/visjs/vis-timeline/issues/1340
                 rollingMode: { follow: false },
@@ -65,7 +64,6 @@ export function MovieTimeline<T extends object>({
 
             timeline.on("doubleClick", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
-                // console.log({ eventProps });
                 if (eventProps.what === "custom-time") {
                     timeline.removeCustomTime(eventProps.customTime);
                 } else {
