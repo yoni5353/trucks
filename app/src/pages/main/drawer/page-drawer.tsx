@@ -15,30 +15,30 @@ export function PageDrawer({
     store,
     entities,
     select,
-    viewedEntityId,
+    focusedEntityId,
 }: {
     map: Map;
     store: MapStore;
     entities: VectorSource;
     select: Select;
-    viewedEntityId: string | undefined;
+    focusedEntityId: string | undefined;
 }) {
     const selectedFeatures = useStore(store, (s) => s.selectedEntities);
 
     const focusEntity = () => {
-        if (viewedEntityId) {
-            flyToEntity(map, entities, viewedEntityId);
+        if (focusedEntityId) {
+            flyToEntity(map, entities, focusedEntityId);
         }
     };
 
     return (
         <>
-            <Activity mode={viewedEntityId ? "hidden" : "visible"}>
+            <Activity mode={focusedEntityId ? "hidden" : "visible"}>
                 <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
                     <MasterTimeline mapStore={store} entities={entities} select={select} />
                 </div>
             </Activity>
-            <Activity mode={viewedEntityId ? "visible" : "hidden"}>
+            <Activity mode={focusedEntityId ? "visible" : "hidden"}>
                 <Tabs
                     className="mx-auto flex h-full max-w-4xl flex-col items-center justify-start p-4"
                     defaultValue="details"

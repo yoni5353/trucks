@@ -15,7 +15,7 @@ export default function Page() {
 
     const [{ map, select, entities, entitiesCluster, store }] = useState(initMap);
 
-    const [viewedEntityId, setViewedEntityId] = useState<string>();
+    const [focusedEntityId, setViewedEntityId] = useState<string>();
 
     const { data: entitiesData } = useQuery(entitiesQuery);
     useEffect(() => {
@@ -67,7 +67,7 @@ export default function Page() {
                                 store={store}
                                 entities={entities}
                                 select={select}
-                                viewedEntityId={viewedEntityId}
+                                focusedEntityId={focusedEntityId}
                             />
                         </ResizablePanel>
                     </ResizablePanelGroup>
