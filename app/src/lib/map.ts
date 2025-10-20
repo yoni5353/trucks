@@ -1,14 +1,14 @@
 import Map from "ol/Map";
 import View from "ol/View";
 import { DragBox, Select } from "ol/interaction";
-import { Tile as TileLayer, Vector as VectorLayer } from "ol/layer";
-import { Cluster, OSM, Vector as VectorSource, XYZ } from "ol/source";
+import { Vector as VectorLayer } from "ol/layer";
+import { Cluster, Vector as VectorSource } from "ol/source";
 import { fromLonLat } from "ol/proj";
 import { Point } from "ol/geom";
 import { Feature } from "ol";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
-import { clusterStyle, entityStyle, selectedEntityStyle } from "./styles";
+import { clusterStyle, entityStyle, selectedEntityStyle } from "./map-styles";
 import { getTileLayer } from "./rasters";
 
 type FeatureId = string | number;
@@ -113,12 +113,10 @@ export function addEntities(
 export function selectEntities(select: Select, source: VectorSource, entitiesIds: string[]) {
     const features = source.getFeatures();
     select.getFeatures().clear();
-    setTimeout(() => {
-        entitiesIds.forEach((id) => {
-            const feature = features.find((f) => f.getId() === id);
-            if (feature) {
-                select.getFeatures().push(feature);
-            }
-        });
+    entitiesIds.forEach((id) => {
+        const feature = features.find((f) => f.getId() === id);
+        if (feature) {
+            select.getFeatures().push(feature);
+        }
     });
 }
