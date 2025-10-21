@@ -32,6 +32,7 @@ type SidebarContextProps = {
     openMobile: boolean;
     setOpenMobile: (open: boolean) => void;
     isMobile: boolean;
+    toggleSidebar: () => void;
     Sidebar: () => void;
 };
 
