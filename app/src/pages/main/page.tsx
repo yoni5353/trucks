@@ -1,5 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { PageSidebar } from "./page-sidebar";
+import { PageSidebar } from "./sidebar/page-sidebar";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import { addEntities, clearAllHistory, initMap, registerHistoryOfEntities } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";

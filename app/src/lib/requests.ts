@@ -138,3 +138,17 @@ export const eventsQuery = queryOptions({
         ];
     },
 });
+
+export const groupSearchQuery = (query: string) =>
+    queryOptions<{ [groupName: string]: Array<{ value: string; label: string }> }>({
+        queryKey: ["groupSearch", query],
+        queryFn: async () => {
+            return {
+                קבוצות: [
+                    { value: "1", label: "קבוצה 1" },
+                    { value: "2", label: "קבוצה 2" },
+                    { value: "3", label: "קבוצה 3" },
+                ],
+            };
+        },
+    });
