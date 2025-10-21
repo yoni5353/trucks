@@ -10,13 +10,13 @@ import {
     SidebarMenuItem,
     SidebarRail,
     SidebarTrigger,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { addRandomEntity } from "@/lib/map";
 import type VectorSource from "ol/source/Vector";
 import type { Cluster } from "ol/source";
 import { useState } from "react";
-import { BotIcon, MapPinned, PanelRightClose, TruckElectricIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BotIcon, MapPinned, SearchIcon, TruckElectricIcon } from "lucide-react";
 import { GroupSearch } from "./group-search";
 import { DateRangePicker } from "./date-range-picker";
 import { PanelRight } from "lucide-static";
@@ -30,6 +30,8 @@ export function PageSidebar({
 }) {
     const [, _setCounter] = useState(0);
     const rerender = () => _setCounter((c) => c + 1);
+
+    const { toggleSidebar } = useSidebar();
 
     return (
         <Sidebar side="right" collapsible="icon" dir="rtl">
@@ -63,7 +65,23 @@ export function PageSidebar({
                     <SidebarGroupLabel>ישויות</SidebarGroupLabel>
                     <SidebarGroupContent className="relative flex flex-col gap-2">
                         <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
-                            <GroupSearch />
+                            <GroupSearch inputClassName="group-search-input" />
+                        </SidebarMenuItem>
+                        <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
+                            <SidebarMenuButton
+                                variant="outline"
+                                onClick={() => {
+                                    toggleSidebar();
+                                    setTimeout(() => {
+                                        document
+                                            ?.getElementsByClassName("group-search-input")
+                                            .item(0)
+                                            ?.focus();
+                                    }, 100);
+                                }}
+                            >
+                                <SearchIcon />
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                             <SidebarMenuButton className="mx-auto" variant="outline">

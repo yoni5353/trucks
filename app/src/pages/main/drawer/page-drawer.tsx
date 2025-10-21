@@ -48,7 +48,7 @@ export function PageDrawer({
             <Activity mode={focusedEntityId ? "visible" : "hidden"}>
                 <Tabs
                     className="mx-auto flex h-full max-w-4xl flex-col items-center justify-start p-4"
-                    defaultValue="details"
+                    defaultValue="other-details"
                     dir="rtl"
                 >
                     <TabsList className="h-min w-min bg-secondary/50">

@@ -10,7 +10,7 @@ import { groupSearchQuery } from "@/lib/requests";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function GroupSearch() {
+export function GroupSearch({ inputClassName }: { inputClassName?: string }) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
     const [selected, setSelected] = useState<{ value: string; label: string }>();
@@ -27,6 +27,7 @@ export function GroupSearch() {
         <div className="relative">
             <Command shouldFilter={true} className="rounded-md border bg-background shadow-sm">
                 <CommandInput
+                    className={inputClassName}
                     value={open ? query : selected?.label}
                     onValueChange={setQuery}
                     placeholder="חפש קבוצה..."

@@ -8,10 +8,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { entitiesQuery, getHistoryOfEntity } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
+import { Pane } from "./pane/pane";
 
 export default function Page() {
     const queryClient = useQueryClient();
     const drawerRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
+    const paneRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
     const [{ map, select, entities, histories, entitiesCluster, store }] = useState(initMap);
@@ -43,20 +45,59 @@ export default function Page() {
 
     return (
         <>
-            <SidebarProvider className="flex h-screen flex-col">
+            <SidebarProvider className="flex h-screen w-screen flex-col">
                 <SidebarInset>
                     <ResizablePanelGroup direction="vertical">
                         <ResizablePanel className="relative" order={1}>
-                            <div className="relative h-screen w-full">
-                                <OLMap
-                                    map={map}
-                                    select={select}
-                                    onViewEntity={(entityId: string | undefined) => {
-                                        setFocusedFeatureId(entityId);
-                                        if (entityId) drawerRef?.current?.expand();
+                            <ResizablePanelGroup direction="horizontal">
+                                <ResizablePanel>
+                                    <div className="relative h-screen w-full">
+                                        <OLMap
+                                            map={map}
+                                            select={select}
+                                            onViewEntity={(entityId: string | undefined) => {
+                                                setFocusedFeatureId(entityId);
+                                                if (entityId) drawerRef?.current?.expand();
+                                                if (entityId) paneRef?.current?.expand(60);
+                                            }}
+                                            onClickSingleEntity={(entityId: string) => {
+                                                if (paneRef.current?.isExpanded()) {
+                                                    setFocusedFeatureId(entityId);
+                                                    if (entityId) drawerRef?.current?.expand();
+                                                    if (entityId) paneRef?.current?.expand(60);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </ResizablePanel>
+                                <ResizableHandle
+                                    className="hover:after:bg-sidebar-border"
+                                    onClick={() => {
+                                        return paneRef.current?.isCollapsed()
+                                            ? paneRef.current?.expand()
+                                            : paneRef.current?.collapse();
                                     }}
                                 />
-                            </div>
+                                <ResizablePanel
+                                    className={cn(
+                                        isDrawerTranstioning && "transition-all duration-100",
+                                    )}
+                                    onTransitionEnd={() => setIsDrawerTransitioning(false)}
+                                    collapsible
+                                    minSize={1}
+                                    defaultSize={1}
+                                    maxSize={70}
+                                    collapsedSize={1}
+                                    ref={paneRef}
+                                >
+                                    <Pane
+                                        focusedFeatureId={focusedFeatureId}
+                                        map={map}
+                                        entities={entities}
+                                        onDismiss={() => paneRef.current?.collapse()}
+                                    />
+                                </ResizablePanel>
+                            </ResizablePanelGroup>
                         </ResizablePanel>
                         <ResizableHandle
                             className="hover:after:bg-sidebar-border"

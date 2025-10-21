@@ -13,10 +13,12 @@ export function OLMap({
     map,
     select,
     onViewEntity,
+    onClickSingleEntity,
 }: {
     map: Map;
     select?: Select;
     onViewEntity: (entityId: string | undefined) => void;
+    onClickSingleEntity: (entityId: string) => void;
 }) {
     const mapRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,7 +48,9 @@ export function OLMap({
                 if (e.selected.length === 1 && selectedFeatures.getLength() === 1) {
                     const coordinates = e.selected[0].getGeometry()?.getCoordinates();
                     tooltip.setPosition(coordinates);
-                    setTooltipEntityId(e.selected[0].get("features")[0].getId());
+                    const featureId = e.selected[0].get("features")[0].getId();
+                    setTooltipEntityId(featureId);
+                    onClickSingleEntity(featureId);
                 } else {
                     tooltip.setPosition(undefined);
                     setTooltipEntityId(undefined);
@@ -59,7 +63,7 @@ export function OLMap({
                 map.removeOverlay(tooltip);
             };
         }
-    }, [map, onViewEntity, select]);
+    }, [map, onClickSingleEntity, select]);
 
     return (
         <>
