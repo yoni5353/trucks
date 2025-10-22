@@ -15,7 +15,7 @@ import {
     historyArrowStyle,
     unfocusedEntityStyle,
 } from "./map-styles";
-import { getTileLayer } from "./rasters";
+import { getTileLayers } from "./rasters";
 
 // Feature Ids Breakdown:
 // - Entities: Regular entities on the map
@@ -55,12 +55,15 @@ export function initMap() {
 
     const map = new Map({
         target: undefined,
-        layers: [getTileLayer(), clusters, historiesLayer],
+        layers: [clusters, historiesLayer],
         view: new View({
             center: fromLonLat([35, 31]),
             zoom: 7.5,
         }),
         controls: [],
+    });
+    getTileLayers().then((layers) => {
+        layers.reverse().forEach((layer) => map.getLayers().insertAt(0, layer));
     });
 
     const { select } = initSelectInteractions(map, store, entities, {
