@@ -1,20 +1,95 @@
-.vis-timeline,
-.vis-timeline .vis-group,
-.vis-timeline .vis-panel,
-.vis-time-axis .vis-grid.vis-vertical,
-.vis-timeline .vis-label {
-    border-color: gray;
+/* Timeline container */
+.vis-timeline {
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    background-color: hsl(var(--card));
+    font-family: inherit;
 }
 
+/* Panels and groups */
+.vis-timeline .vis-panel,
+.vis-timeline .vis-group {
+    border-color: hsl(var(--border));
+    background-color: hsl(var(--card));
+}
+
+/* Grid lines */
+.vis-time-axis .vis-grid.vis-vertical {
+    border-color: hsl(var(--border));
+    opacity: 0.5;
+}
+
+.vis-time-axis .vis-grid.vis-minor {
+    border-color: hsl(var(--border));
+    opacity: 0.2;
+}
+
+/* Labels */
+.vis-timeline .vis-label {
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+}
+
+.vis-labelset .vis-label {
+    color: hsl(var(--foreground));
+    font-weight: 500;
+    background-color: hsl(var(--muted) / 0.2);
+}
+
+.vis-labelset .vis-label:hover {
+    background-color: hsl(var(--muted));
+}
+
+/* Timeline items */
 .vis-item.vis-line,
 .vis-item.vis-dot {
     display: none;
 }
-.vis-item.vis-box {
-    border-radius: 20px;
+
+.vis-item.vis-box,
+.vis-item.vis-range {
+    border-radius: 1rem;
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    font-size: 0.875rem;
 }
 
-.vis-labelset .vis-label {
-    color: var(--primary);
-    padding-top: 5px; /* Matches line height atm */
+.vis-item.vis-box.vis-selected,
+.vis-item.vis-range.vis-selected {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+}
+
+.vis-item.vis-box:hover {
+    /*background-color: hsl(var(--accent));*/
+    border-color: hsl(var(--ring));
+}
+
+/* Time axis */
+.vis-time-axis .vis-text {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.75rem;
+}
+
+.vis-time-axis .vis-text.vis-major {
+    font-weight: 500;
+    color: hsl(var(--foreground));
+}
+
+/* Current time marker */
+.vis-custom-time {
+    background-color: hsl(var(--primary));
+    opacity: 0.8;
+}
+
+/* Background */
+.vis-panel.vis-background {
+    background-color: hsl(var(--background));
+}
+
+.vis-panel.vis-center,
+.vis-panel.vis-top {
+    background-color: hsl(var(--card));
 }

@@ -61,10 +61,11 @@ export default function Page() {
                                                 if (entityId) paneRef?.current?.expand(50);
                                             }}
                                             onClickSingleEntity={(entityId: string) => {
-                                                if (paneRef.current?.isExpanded()) {
+                                                // if (paneRef.current?.isExpanded()) {
+                                                if (true) {
                                                     setFocusedFeatureId(entityId);
                                                     if (entityId) drawerRef?.current?.expand();
-                                                    if (entityId) paneRef?.current?.expand(50);
+                                                    // if (entityId) paneRef?.current?.expand(50);
                                                 }
                                             }}
                                         />

@@ -9,6 +9,7 @@ import { MasterTimeline } from "@/pages/main/drawer/master-timeline";
 import type { Select } from "ol/interaction";
 import type VectorSource from "ol/source/Vector";
 import { Activity } from "react";
+import { EntityTimeline } from "./entity-timeline";
 
 export function PageDrawer({
     map,
@@ -33,6 +34,8 @@ export function PageDrawer({
         }
     };
 
+    const [entityType, entityId] = focusedEntityId?.split("-", 2) ?? [];
+
     return (
         <>
             <Activity mode={focusedEntityId ? "hidden" : "visible"}>
@@ -48,20 +51,21 @@ export function PageDrawer({
             <Activity mode={focusedEntityId ? "visible" : "hidden"}>
                 <Tabs
                     className="mx-auto flex h-full max-w-4xl flex-col items-center justify-start p-4"
-                    defaultValue="other-details"
+                    defaultValue="timeline"
                     dir="rtl"
                 >
                     <TabsList className="h-min w-min bg-secondary/50">
-                        <TabsTrigger value="details">פרטים</TabsTrigger>
+                        <TabsTrigger value="timeline">ציר זמן</TabsTrigger>
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="details" className="p-2">
+                    <TabsContent value="timeline" className="h-[292px] p-2">
+                        <EntityTimeline enityId={entityId} entityType={entityType} />
+                    </TabsContent>
+                    <TabsContent value="other-details" className="p-2">
                         <EntityDetails
                             focusedEntityId={focusedEntityId}
                             onFocus={focusCurrentEntity}
                         />
-                    </TabsContent>
-                    <TabsContent value="other-details" className="p-2">
                         <div className="flex gap-4">
                             <Skeleton className="mt-4 h-12 w-28" />
                             <Skeleton className="mt-4 h-12 w-64" />

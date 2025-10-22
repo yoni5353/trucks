@@ -32,7 +32,7 @@ export function MovieTimeline<T extends object>({
                 height: "100%",
                 stack: false,
                 zoomMin: 1000 * 60 * 60,
-                zoomMax: 1000 * 60 * 60 * 24 * 31,
+                zoomMax: 1000 * 60 * 60 * 24 * 7,
                 start: new Date("2024-01-01T00:00:00Z"),
                 end: new Date("2024-01-02T00:00:00Z"),
                 selectable: true,
@@ -52,6 +52,7 @@ export function MovieTimeline<T extends object>({
                     a.order = b.order;
                     b.order = v;
                 },
+                groupHeightMode: "fixed",
                 // Important workaround-fix for initial loading, see https://github.com/visjs/vis-timeline/issues/1340
                 rollingMode: { follow: false },
                 // temp

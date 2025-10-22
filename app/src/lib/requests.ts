@@ -39,6 +39,34 @@ export const getHistoryOfEntity = async (
     )?.history;
 };
 
+export const eventsOfEntityQuery = (entityType: string, entityId: string) =>
+    queryOptions({
+        queryKey: ["events", entityType, entityId],
+        queryFn: async () => {
+            return {
+                locations: [
+                    { coords: [34.7818, 31.0853], time: "2024-01-01T10:00:00Z" },
+                    { coords: [34.7418, 31.153], time: "2024-01-01T12:00:00Z" },
+                    { coords: [34.7618, 31.28], time: "2024-01-01T15:00:00Z" },
+                    { coords: [34.8, 31.28], time: "2024-01-01T18:00:00Z" },
+                    // { location: "MULTIPOLYGON((34.7818 31.0853, 34.7418 31.153, 34.7618 31.28, 34.8 31.28))", time: "2024-01-01T20:00:00Z" }
+                ],
+                events: [
+                    {
+                        type: "speeding",
+                        start: "2024-01-01T13:00:00Z",
+                        end: "2024-01-01T14:00:00Z",
+                    },
+                    {
+                        type: "harsh_braking",
+                        start: "2024-01-01T16:00:00Z",
+                        end: "2024-01-01T20:05:00Z",
+                    },
+                ],
+            };
+        },
+    });
+
 export const eventsQuery = queryOptions({
     queryKey: ["events"],
     queryFn: async () => {
