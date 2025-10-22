@@ -1,8 +1,9 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { DataSet } from "vis-data";
-import { Timeline, type TimelineOptions } from "vis-timeline/esnext";
+import { Timeline, type IdType, type TimelineOptions } from "vis-timeline/esnext";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import "./movie-timeline.css";
+import { set } from "ol/transform";
 
 /** Shows timeline with a marker selection */
 export function MovieTimeline<T extends object>({
@@ -24,6 +25,8 @@ export function MovieTimeline<T extends object>({
     // eslint-disable-next-line react-hooks/rules-of-hooks
     timelineRef ??= useRef<Timeline | null>(null);
     const timeline = timelineRef.current;
+
+    const [markerTime, setMarkerTime] = useState<Date>();
 
     useEffect(() => {
         if (containerRef.current && !timelineRef.current) {
@@ -68,10 +71,10 @@ export function MovieTimeline<T extends object>({
                 if (eventProps.what === "custom-time") {
                     timeline.removeCustomTime(eventProps.customTime);
                 } else {
-                    const id = new Date().getTime();
-                    // const markerText = document.getElementById("markerText").value || undefined;
-                    timeline.addCustomTime(eventProps.time, id);
-                    timeline.setCustomTimeMarker("some text", id);
+                    try {
+                        timeline.removeCustomTime("marker");
+                    } catch {}
+                    timeline.addCustomTime(eventProps.time, "marker");
                 }
             });
         }
