@@ -1,7 +1,13 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageSidebar } from "./sidebar/page-sidebar";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
-import { addEntities, clearAllHistory, initMap, registerHistoryOfEntities } from "@/lib/map";
+import {
+    addEntities,
+    clearAllHistory,
+    initMap,
+    registerHistoryOfEntities,
+    updateEntityOpacity,
+} from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer/page-drawer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +15,8 @@ import { entitiesQuery, getHistoryOfEntity } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 import { Pane } from "./pane/pane";
+
+const DRAWER_DEFAULT_HEIGHT = 40;
 
 export default function Page() {
     const queryClient = useQueryClient();
@@ -31,14 +39,19 @@ export default function Page() {
     const [focusedFeatureId, _setFoucsedFeatureId] = useState<string>();
     const setFocusedFeatureId = async (id: string | undefined) => {
         _setFoucsedFeatureId(id);
+        updateEntityOpacity(entities, id);
 
         if (id) {
             const [type, entityId] = id?.split("-", 2) as [string, string];
             const focusedFeatureHistory = await getHistoryOfEntity(queryClient, type, entityId);
             if (focusedFeatureHistory) {
                 registerHistoryOfEntities(histories, { [id]: focusedFeatureHistory });
+            } else {
+                clearAllHistory(histories);
             }
         } else {
+            setIsDrawerTransitioning(true);
+            drawerRef.current?.collapse();
             clearAllHistory(histories);
         }
     };
@@ -57,14 +70,20 @@ export default function Page() {
                                             select={select}
                                             onViewEntity={(entityId: string | undefined) => {
                                                 setFocusedFeatureId(entityId);
-                                                if (entityId) drawerRef?.current?.expand();
+                                                if (entityId)
+                                                    drawerRef?.current?.expand(
+                                                        DRAWER_DEFAULT_HEIGHT,
+                                                    );
                                                 if (entityId) paneRef?.current?.expand(50);
                                             }}
                                             onClickSingleEntity={(entityId: string) => {
                                                 // if (paneRef.current?.isExpanded()) {
                                                 if (true) {
                                                     setFocusedFeatureId(entityId);
-                                                    if (entityId) drawerRef?.current?.expand();
+                                                    if (entityId)
+                                                        drawerRef?.current?.expand(
+                                                            DRAWER_DEFAULT_HEIGHT,
+                                                        );
                                                     // if (entityId) paneRef?.current?.expand(50);
                                                 }
                                             }}
@@ -105,7 +124,7 @@ export default function Page() {
                             onClick={() => {
                                 setIsDrawerTransitioning(true);
                                 return drawerRef.current?.isCollapsed()
-                                    ? drawerRef.current?.expand()
+                                    ? drawerRef.current?.expand(DRAWER_DEFAULT_HEIGHT)
                                     : drawerRef.current?.collapse();
                             }}
                         />
@@ -117,7 +136,7 @@ export default function Page() {
                             collapsible
                             minSize={1}
                             collapsedSize={1}
-                            defaultSize={40}
+                            defaultSize={1} // defaultSize={40} when MasterTimeline is functional
                             maxSize={60}
                         >
                             <PageDrawer

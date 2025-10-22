@@ -8,7 +8,13 @@ import { LineString, Point } from "ol/geom";
 import { Feature } from "ol";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
-import { clusterStyle, entityStyle, selectedEntityStyle, historyArrowStyle } from "./map-styles";
+import {
+    clusterStyle,
+    entityStyle,
+    selectedEntityStyle,
+    historyArrowStyle,
+    unfocusedEntityStyle,
+} from "./map-styles";
 import { getTileLayer } from "./rasters";
 
 // Feature Ids Breakdown:
@@ -146,7 +152,7 @@ export function flyToEntity(map: Map, entities: VectorSource, entityId: string) 
     map?.getView().fit(geometry, {
         duration: 1000,
         maxZoom: 14,
-        // TODO padding? to zoom in middle of map pane not disregarding the drawer and sidebar
+        // TODO padding? to zoom in middle of map pane not disregarding the drawer and
     });
 }
 
@@ -196,4 +202,21 @@ export function registerHistoryOfEntities(
 
 export function clearAllHistory(histories: VectorSource) {
     histories.clear();
+}
+
+// ENTITY FOCUS
+
+export function updateEntityOpacity(entities: VectorSource, focusedEntityId: string | undefined) {
+    const features = entities.getFeatures();
+
+    if (focusedEntityId) {
+        features.forEach((feature) => {
+            const isDimmed = feature.getId() !== focusedEntityId;
+            feature.setStyle(isDimmed ? unfocusedEntityStyle : selectedEntityStyle);
+        });
+    } else {
+        features.forEach((feature) => {
+            feature.setStyle(entityStyle);
+        });
+    }
 }

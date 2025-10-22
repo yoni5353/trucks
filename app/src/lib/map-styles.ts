@@ -12,6 +12,9 @@ export const entityStyle = new Style({
     }),
 });
 
+export const unfocusedEntityStyle = entityStyle.clone();
+unfocusedEntityStyle.getImage()?.setOpacity(0.3);
+
 export const selectedEntityStyle = new Style({
     image: new CircleStyle({
         radius: 10,

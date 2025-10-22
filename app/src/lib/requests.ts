@@ -55,7 +55,7 @@ export const eventsOfEntityQuery = (entityType: string, entityId: string) =>
                     {
                         type: "speeding",
                         start: "2024-01-01T13:00:00Z",
-                        end: "2024-01-01T14:00:00Z",
+                        end: "2024-01-01T14:01:03Z",
                     },
                     {
                         type: "harsh_braking",
