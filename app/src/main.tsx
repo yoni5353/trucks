@@ -4,14 +4,17 @@ import "./index.css";
 import App from "./App.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "./components/theme-provider";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools buttonPosition="bottom-left" />
-        <StrictMode>
-            <App />
-        </StrictMode>
+        <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+            <StrictMode>
+                <App />
+            </StrictMode>
+        </ThemeProvider>
     </QueryClientProvider>,
 );

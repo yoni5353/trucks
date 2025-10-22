@@ -16,10 +16,12 @@ import { addRandomEntity } from "@/lib/map";
 import type VectorSource from "ol/source/Vector";
 import type { Cluster } from "ol/source";
 import { useState } from "react";
-import { BotIcon, MapPinned, SearchIcon, TruckElectricIcon } from "lucide-react";
+import { BotIcon, MapPinned, SearchIcon, TruckElectricIcon, Moon, Sun } from "lucide-react";
 import { GroupSearch } from "./group-search";
 import { DateRangePicker } from "./date-range-picker";
 import { PanelRight } from "lucide-static";
+import { useTheme } from "@/components/theme-provider";
+import { Button } from "@/components/ui/button";
 
 export function PageSidebar({
     entities,
@@ -32,6 +34,7 @@ export function PageSidebar({
     const rerender = () => _setCounter((c) => c + 1);
 
     const { toggleSidebar } = useSidebar();
+    const { theme, setTheme } = useTheme();
 
     return (
         <Sidebar side="right" collapsible="icon" dir="rtl">
@@ -56,7 +59,18 @@ export function PageSidebar({
                                 </div>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarTrigger className="group-data-[collapsible=icon]:visbile h-8 w-8 transition-transform group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-14">
+                        <Button
+                            className="h-8 w-8"
+                            variant="ghost"
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        >
+                            {theme === "dark" ? (
+                                <Sun className="size-4" />
+                            ) : (
+                                <Moon className="size-4" />
+                            )}
+                        </Button>
+                        <SidebarTrigger className="group-data-[collapsible=icon]:visbile h-8 w-10 transition-transform group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-14">
                             <PanelRight />
                         </SidebarTrigger>
                     </div>
