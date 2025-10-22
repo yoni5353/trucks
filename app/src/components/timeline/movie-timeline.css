@@ -33,7 +33,7 @@
 .vis-labelset .vis-label {
     color: hsl(var(--foreground));
     font-weight: 500;
-    background-color: hsl(var(--muted) / 0.2);
+    background-color: hsl(var(--muted) / 0.15);
 }
 
 .vis-labelset .vis-label:hover {

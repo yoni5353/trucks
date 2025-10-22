@@ -38,6 +38,7 @@ export function MovieTimeline<T extends object>({
                 selectable: true,
                 multiselect: true,
                 moveable: false,
+                cluster: {},
                 snap: (date, _scale, _step) => {
                     const minute = 60 * 1000;
                     return Math.round(date.valueOf() / minute) * minute;
@@ -52,7 +53,6 @@ export function MovieTimeline<T extends object>({
                     a.order = b.order;
                     b.order = v;
                 },
-                groupHeightMode: "fixed",
                 // Important workaround-fix for initial loading, see https://github.com/visjs/vis-timeline/issues/1340
                 rollingMode: { follow: false },
                 // temp

@@ -58,7 +58,7 @@ export function PageDrawer({
                         <TabsTrigger value="timeline">ציר זמן</TabsTrigger>
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="timeline" className="h-[292px] p-2">
+                    <TabsContent value="timeline" className="h-[296px] p-2">
                         <EntityTimeline enityId={entityId} entityType={entityType} />
                     </TabsContent>
                     <TabsContent value="other-details" className="p-2">
