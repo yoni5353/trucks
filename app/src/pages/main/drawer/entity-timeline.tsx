@@ -101,7 +101,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
             items={items}
             groups={groups}
             timelineOptions={{ moveable: true }}
-            clusterTitleTemplate={({ items, group }) => {
+            clusterTemplate={({ items, group }) => {
                 return [
                     `<div style="display: flex; align-items: center; gap: 2px;">${items.length.toString()} ${EVENT_GROUPS.find((g) => g.id === group.groupId)?.clusterIcon}</div>`,
                 ];

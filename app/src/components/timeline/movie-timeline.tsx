@@ -11,7 +11,7 @@ export function MovieTimeline<T extends TimelineItem>({
     groups,
     onSelect,
     timelineOptions,
-    clusterTitleTemplate,
+    clusterTemplate,
     onCurrentTimeChange,
 }: {
     timelineRef?: RefObject<Timeline | null>;
@@ -19,10 +19,7 @@ export function MovieTimeline<T extends TimelineItem>({
     groups?: DataSet<object>;
     onSelect?: (itemIds: string[]) => void;
     timelineOptions?: TimelineOptions;
-    clusterTitleTemplate?: (props: {
-        items: TimelineItem[];
-        group: { groupId: string };
-    }) => [string];
+    clusterTemplate?: (props: { items: TimelineItem[]; group: { groupId: string } }) => [string];
     onCurrentTimeChange?: (time: Date) => void;
 }) {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +31,7 @@ export function MovieTimeline<T extends TimelineItem>({
 
     useEffect(() => {
         if (containerRef.current && !timelineRef.current) {
-            const cluster = { titleTemplate: clusterTitleTemplate }; // the "cluster" setting is lost on "setOptions"
+            const cluster = { titleTemplate: clusterTemplate }; // the "cluster" setting is lost on "setOptions"
             const options = {
                 width: "100%",
                 height: "100%",
