@@ -111,32 +111,35 @@ export function PageSidebar({
                         <DateRangePicker />
                     </SidebarGroupContent>
                 </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>דיבוג</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => addRandomEntity(entities)}>
-                                    <BotIcon />
-                                    <div>add entity</div>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
-                                <SidebarMenuButton
-                                    onClick={() => {
-                                        entitiesCluster.setDistance(50);
-                                        rerender();
-                                    }}
-                                >
-                                    <BotIcon />
-                                    <div>
-                                        change cluster distance - {entitiesCluster.getDistance()}
-                                    </div>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {import.meta.env.DEV && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>דיבוג</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton onClick={() => addRandomEntity(entities)}>
+                                        <BotIcon />
+                                        <div>add entity</div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+                                    <SidebarMenuButton
+                                        onClick={() => {
+                                            entitiesCluster.setDistance(50);
+                                            rerender();
+                                        }}
+                                    >
+                                        <BotIcon />
+                                        <div>
+                                            change cluster distance -{" "}
+                                            {entitiesCluster.getDistance()}
+                                        </div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
             <SidebarRail />
         </Sidebar>
