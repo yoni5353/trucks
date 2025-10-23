@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  vis-timeline:
+    hash: 353e2da899585cf96fe50a5c89396310b0658172bbbfe3e035472a4541c108bb
+    path: patches/vis-timeline.patch
+
 importers:
 
   .:
@@ -82,7 +87,7 @@ importers:
         version: 8.0.3(uuid@13.0.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1))
       vis-timeline:
         specifier: ^8.3.1
-        version: 8.3.1(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)(keycharm@0.4.0)(moment@2.30.1)(propagating-hammerjs@3.0.0(@egjs/hammerjs@2.0.17))(uuid@13.0.0)(vis-data@8.0.3(uuid@13.0.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)))(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1))(xss@1.0.15)
+        version: 8.3.1(patch_hash=353e2da899585cf96fe50a5c89396310b0658172bbbfe3e035472a4541c108bb)(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)(keycharm@0.4.0)(moment@2.30.1)(propagating-hammerjs@3.0.0(@egjs/hammerjs@2.0.17))(uuid@13.0.0)(vis-data@8.0.3(uuid@13.0.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)))(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1))(xss@1.0.15)
       zustand:
         specifier: ^5.0.8
         version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
@@ -4184,7 +4189,7 @@ snapshots:
       uuid: 13.0.0
       vis-util: 6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)
 
-  vis-timeline@8.3.1(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)(keycharm@0.4.0)(moment@2.30.1)(propagating-hammerjs@3.0.0(@egjs/hammerjs@2.0.17))(uuid@13.0.0)(vis-data@8.0.3(uuid@13.0.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)))(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1))(xss@1.0.15):
+  vis-timeline@8.3.1(patch_hash=353e2da899585cf96fe50a5c89396310b0658172bbbfe3e035472a4541c108bb)(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)(keycharm@0.4.0)(moment@2.30.1)(propagating-hammerjs@3.0.0(@egjs/hammerjs@2.0.17))(uuid@13.0.0)(vis-data@8.0.3(uuid@13.0.0)(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1)))(vis-util@6.0.0(@egjs/hammerjs@2.0.17)(component-emitter@1.3.1))(xss@1.0.15):
     dependencies:
       '@egjs/hammerjs': 2.0.17
       component-emitter: 1.3.1

@@ -1,0 +1,45 @@
+diff --git a/declarations/index.d.ts b/declarations/index.d.ts
+index 024d1d380496cded8d719d1d4597881d3792f000..20007cd66cd6448a3230667e1f0c8b0f400f28c1 100644
+--- a/declarations/index.d.ts
++++ b/declarations/index.d.ts
+@@ -305,7 +305,7 @@ export type TimelineOptionsClusterCriteriaFunction = (
+   secondItem: TimelineItem,
+ ) => boolean;
+ export type TimelineOptionsCluster = {
+-  titleTemplate?: string;
++  titleTemplate?: string | ((props: { items: TimelineItem[], group: { groupId: string }) => [string] | [string, string]);
+   maxItems?: number;
+   clusterCriteria?: TimelineOptionsClusterCriteriaFunction;
+   showStipes?: boolean;
+diff --git a/esnext/esm/vis-timeline-graph2d.mjs b/esnext/esm/vis-timeline-graph2d.mjs
+index c76ca41e9ae9c488b275c389f6bbe4faf810d4bb..9d3a08809db7c6ad1160d5624ede69fc1a237054 100644
+--- a/esnext/esm/vis-timeline-graph2d.mjs
++++ b/esnext/esm/vis-timeline-graph2d.mjs
+@@ -11126,9 +11126,15 @@ class ClusterGenerator {
+       toTime: this.itemSet.body.util.toTime,
+     };
+ 
+-    const title = titleTemplate.replace(/{count}/, clusterItems.length);
+-    const clusterContent =
+-      '<div title="' + title + '">' + clusterItems.length + "</div>";
++    let [ title, clusterContent ] = ["", ""];
++    if (typeof titleTemplate === "string") {
++      title = titleTemplate.replace(/{count}/, clusterItems.length);
++      clusterContent =
++          '<div title="' + title + '">' + clusterItems.length + "</div>";
++    } else if (typeof titleTemplate === "function") {
++      [clusterContent, title] = titleTemplate({items: clusterItems, group});
++    }
++
+     const clusterOptions = Object.assign({}, options, this.itemSet.options);
+     const data = {
+       content: clusterContent,
+@@ -14647,7 +14653,7 @@ let allOptions$1 = {
+   stackSubgroups: { boolean: bool$1 },
+   cluster: {
+     maxItems: { number: number$1, undefined: "undefined" },
+-    titleTemplate: { string: string$1, undefined: "undefined" },
++    titleTemplate: { any: any$1 },
+     clusterCriteria: { function: "function", undefined: "undefined" },
+     showStipes: { boolean: bool$1, undefined: "undefined" },
+     fitOnDoubleClick: { boolean: bool$1, undefined: "undefined" },
