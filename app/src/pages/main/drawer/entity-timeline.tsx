@@ -40,7 +40,6 @@ const EVENT_GROUPS = [
 
 export function EntityTimeline({ enityId, entityType }: { enityId: string; entityType: string }) {
     const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId));
-    const timeRange = useStore(parametersStore, (s) => s.timeRange);
 
     const timelineRef = useRef<Timeline | null>(null);
 
@@ -60,6 +59,30 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
         },
         [timelineRef, events],
     );
+
+    const timeRange = useStore(parametersStore, (s) => s.timeRange);
+    // Add buffers for edges of items
+    const min = useMemo(() => new Date(timeRange.start.getTime() - 30 * 60 * 1000), [timeRange]);
+    const max = useMemo(
+        () => new Date((timeRange.end?.getTime() ?? Date.now()) + 30 * 60 * 1000),
+        [timeRange],
+    );
+    useEffect(
+        function resizeTimelineWindowOnTimeRangeChange() {
+            if (timelineRef.current) {
+                // TOFIX: the cluster setting is forgotten here
+                timelineRef.current.setOptions({
+                    min,
+                    start: min,
+                    end: max,
+                    max,
+                });
+            }
+        },
+        [max, min, timeRange],
+    );
+
+    // LOAD DATA
 
     const items = useMemo(() => new DataSet(), []);
     const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
@@ -97,10 +120,6 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     if (!events) {
         return <div>Loading...</div>;
     }
-
-    // Add buffers for edges of items
-    const min = new Date(timeRange.start.getTime() - 30 * 60 * 1000);
-    const max = new Date((timeRange.end?.getTime() ?? Date.now()) + 30 * 60 * 1000);
 
     return (
         <MovieTimeline
