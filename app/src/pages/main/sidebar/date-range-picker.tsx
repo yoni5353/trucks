@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 
 export const DateRangePicker = () => {
-    const value = "24 שעות אחורה";
+    const value = "6 שעות אחורה";
     return (
         <Popover>
             <PopoverTrigger asChild>

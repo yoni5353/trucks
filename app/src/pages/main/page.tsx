@@ -15,6 +15,7 @@ import { entitiesQuery, getHistoryOfEntity } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 import { Pane } from "./pane/pane";
+import type { TimeRange } from "./parameters";
 
 const DRAWER_DEFAULT_HEIGHT = 40;
 
@@ -36,6 +37,7 @@ export default function Page() {
         [entitiesData, entities],
     );
 
+    // Handle feature focus
     const [focusedFeatureId, _setFoucsedFeatureId] = useState<string>();
     const setFocusedFeatureId = async (id: string | undefined) => {
         _setFoucsedFeatureId(id);

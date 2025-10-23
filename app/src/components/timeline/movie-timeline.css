@@ -84,6 +84,10 @@
     opacity: 0.8;
 }
 
+.vis-current-time {
+    background-color: hsl(95 25% 45% / 0.4);
+}
+
 /* Background */
 .vis-panel.vis-background {
     background-color: hsl(var(--background));

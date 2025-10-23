@@ -36,10 +36,10 @@ export function MovieTimeline<T extends TimelineItem>({
                 width: "100%",
                 height: "100%",
                 stack: false,
-                zoomMin: 1000 * 60 * 60,
+                zoomMin: 1000 * 60,
                 zoomMax: 1000 * 60 * 60 * 24 * 7,
-                start: new Date("2024-01-01T00:00:00Z"),
-                end: new Date("2024-01-02T00:00:00Z"),
+                start: new Date(Date.now() - 24 * 60 * 60 * 1000),
+                end: new Date(),
                 selectable: true,
                 multiselect: true,
                 moveable: false,
@@ -68,13 +68,19 @@ export function MovieTimeline<T extends TimelineItem>({
             timelineRef.current = new Timeline(containerRef.current, items, groups, options);
             const timeline = timelineRef.current;
 
+            // Fix for items not showing up initially when clustering is enabled (they show up only after zoom change)
+            if (cluster) {
+                const w = timeline.getWindow();
+                timeline.setWindow(w.start, w.end);
+            }
+
             // Add events for time marker
 
             let isDragging = false;
             timeline.on("mouseDown", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
                 if (
-                    eventProps.what === "item" ||
+                    eventProps.what !== "axis" ||
                     properties.event.shiftKey ||
                     properties.event.ctrlKey
                 ) {
@@ -100,6 +106,8 @@ export function MovieTimeline<T extends TimelineItem>({
                 }
             });
             timeline.on("doubleClick", function (properties) {
+                const w = timeline.getWindow();
+                timeline.setWindow(w.start, w.end);
                 const eventProps = timeline.getEventProperties(properties.event);
                 if (eventProps.what === "custom-time") {
                     timeline.removeCustomTime(eventProps.customTime);

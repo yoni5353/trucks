@@ -4,9 +4,11 @@ import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
-import type { Timeline } from "vis-timeline";
-import { MapPinned, Volume2, Image, Bot, LayoutList, MapPin } from "lucide-static";
+import { Timeline } from "vis-timeline";
+import { MapPinned, Volume2, Image, Bot, LayoutList } from "lucide-static";
 import { intervalToDuration } from "date-fns";
+import { useStore } from "zustand";
+import { parametersStore } from "../parameters";
 
 const EVENT_GROUPS = [
     {
@@ -38,6 +40,7 @@ const EVENT_GROUPS = [
 
 export function EntityTimeline({ enityId, entityType }: { enityId: string; entityType: string }) {
     const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId));
+    const timeRange = useStore(parametersStore, (s) => s.timeRange);
 
     const timelineRef = useRef<Timeline | null>(null);
 
@@ -95,12 +98,22 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
         return <div>Loading...</div>;
     }
 
+    // Add buffers for edges of items
+    const min = new Date(timeRange.start.getTime() - 30 * 60 * 1000);
+    const max = new Date((timeRange.end?.getTime() ?? Date.now()) + 30 * 60 * 1000);
+
     return (
         <MovieTimeline
             timelineRef={timelineRef}
             items={items}
             groups={groups}
-            timelineOptions={{ moveable: true }}
+            timelineOptions={{
+                moveable: true,
+                min,
+                start: min,
+                end: max,
+                max,
+            }}
             clusterTemplate={({ items, group }) => {
                 return [
                     `<div style="display: flex; align-items: center; gap: 2px;">${items.length.toString()} ${EVENT_GROUPS.find((g) => g.id === group.groupId)?.clusterIcon}</div>`,

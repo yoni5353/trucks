@@ -1,6 +1,5 @@
 import type Map from "ol/Map";
 import { flyToEntity, type MapStore } from "@/lib/map";
-import { useStore } from "zustand";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { EntityDetails } from "./entity-details";
@@ -26,8 +25,6 @@ export function PageDrawer({
     focusedEntityId: string | undefined;
     onFocusEntity: (entityId: string) => void;
 }) {
-    const selectedFeatures = useStore(store, (s) => s.selectedEntities);
-
     const focusCurrentEntity = () => {
         if (focusedEntityId) {
             flyToEntity(map, entities, focusedEntityId);
