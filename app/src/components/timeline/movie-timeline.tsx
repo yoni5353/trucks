@@ -34,6 +34,7 @@ export function MovieTimeline<T extends TimelineItem>({
 
     useEffect(() => {
         if (containerRef.current && !timelineRef.current) {
+            const cluster = { titleTemplate: clusterTitleTemplate }; // the "cluster" setting is lost on "setOptions"
             const options = {
                 width: "100%",
                 height: "100%",
@@ -45,7 +46,7 @@ export function MovieTimeline<T extends TimelineItem>({
                 selectable: true,
                 multiselect: true,
                 moveable: false,
-                cluster: { titleTemplate: clusterTitleTemplate },
+                cluster,
                 snap: (date, _scale, _step) => {
                     const minute = 60 * 1000;
                     return Math.round(date.valueOf() / minute) * minute;
@@ -70,15 +71,41 @@ export function MovieTimeline<T extends TimelineItem>({
             timelineRef.current = new Timeline(containerRef.current, items, groups, options);
             const timeline = timelineRef.current;
 
+            // Add events for time marker
+
+            let isDragging = false;
+            timeline.on("mouseDown", function (properties) {
+                const eventProps = timeline.getEventProperties(properties.event);
+                if (
+                    eventProps.what === "item" ||
+                    properties.event.shiftKey ||
+                    properties.event.ctrlKey
+                ) {
+                    return;
+                }
+                isDragging = true;
+
+                timeline.setOptions({ moveable: false, cluster });
+                try {
+                    timeline.setCustomTime(eventProps.time, "marker");
+                } catch {
+                    timeline.addCustomTime(eventProps.time, "marker");
+                }
+            });
+            timeline.on("mouseUp", function () {
+                isDragging = false;
+                timeline.setOptions({ moveable: true, cluster });
+            });
+            timeline.on("mouseMove", function (properties) {
+                if (isDragging) {
+                    const eventProps = timeline.getEventProperties(properties.event);
+                    timeline.setCustomTime(eventProps.time, "marker");
+                }
+            });
             timeline.on("doubleClick", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
                 if (eventProps.what === "custom-time") {
                     timeline.removeCustomTime(eventProps.customTime);
-                } else {
-                    try {
-                        timeline.removeCustomTime("marker");
-                    } catch {}
-                    timeline.addCustomTime(eventProps.time, "marker");
                 }
             });
         }
