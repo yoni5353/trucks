@@ -1,13 +1,40 @@
-import { eventsOfEntityQuery, eventsQuery } from "@/lib/requests";
+import { eventsOfEntityQuery } from "@/lib/requests";
 import { useQuery } from "@tanstack/react-query";
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
-import { selectEntities } from "@/lib/map";
 import { useEffect, useMemo, useRef } from "react";
 import type { Timeline } from "vis-timeline";
-import { MapPinned, ShieldX, Volume2, Image, Bot, LayoutList } from "lucide-static";
+import { MapPinned, Volume2, Image, Bot, LayoutList, MapPin } from "lucide-static";
 import { intervalToDuration } from "date-fns";
+
+const EVENT_GROUPS = [
+    {
+        id: "locations",
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${MapPinned}</div>`,
+        clusterIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>`,
+    },
+    {
+        id: "audio",
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Volume2}</div>`,
+        clusterIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg>`,
+    },
+    {
+        id: "visual",
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Image}</div>`,
+        // clusterIcon: Image,
+    },
+    {
+        id: "text",
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${LayoutList}</div>`,
+        // clusterIcon: LayoutList,
+    },
+    {
+        id: "events",
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Bot}</div>`,
+        // clusterIcon: Bot,
+    },
+];
 
 export function EntityTimeline({ enityId, entityType }: { enityId: string; entityType: string }) {
     const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId));
@@ -32,29 +59,8 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     );
 
     const items = useMemo(() => new DataSet(), []);
-    const groups = useMemo(() => new DataSet(), []);
+    const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
     if (events && items.getIds().length === 0) {
-        groups.add({
-            id: "locations",
-            content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${MapPinned}</div>`,
-        });
-        groups.add({
-            id: "audio",
-            content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Volume2}</div>`,
-        });
-        groups.add({
-            id: "visual",
-            content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Image}</div>`,
-        });
-        groups.add({
-            id: "events",
-            content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Bot}</div>`,
-        });
-        groups.add({
-            id: "idrk",
-            content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${LayoutList}</div>`,
-        });
-
         for (const location of events.locations) {
             items.add({
                 id: events.locations.indexOf(location).toString(),
@@ -95,6 +101,11 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
             items={items}
             groups={groups}
             timelineOptions={{ moveable: true }}
+            clusterTitleTemplate={({ items, group }) => {
+                return [
+                    `<div style="display: flex; align-items: center; gap: 2px;">${items.length.toString()} ${EVENT_GROUPS.find((g) => g.id === group.groupId)?.clusterIcon}</div>`,
+                ];
+            }}
             // onSelect={(itemIds) => {
             //     const selected = items.get(itemIds);
             //     const groupIds = new Set(selected.map((item) => item.group));

@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { DataSet } from "vis-data";
-import { Timeline, type IdType, type TimelineOptions } from "vis-timeline/esnext";
+import { Timeline, type TimelineItem, type TimelineOptions } from "vis-timeline/esnext";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import "./movie-timeline.css";
-import { set } from "ol/transform";
 
 /** Shows timeline with a marker selection */
-export function MovieTimeline<T extends object>({
+export function MovieTimeline<T extends TimelineItem>({
     timelineRef,
     items,
     groups,
     onSelect,
     timelineOptions,
+    clusterTitleTemplate,
     onCurrentTimeChange,
 }: {
     timelineRef?: RefObject<Timeline | null>;
@@ -19,6 +19,10 @@ export function MovieTimeline<T extends object>({
     groups?: DataSet<object>;
     onSelect?: (itemIds: string[]) => void;
     timelineOptions?: TimelineOptions;
+    clusterTitleTemplate?: (props: {
+        items: TimelineItem[];
+        group: { groupId: string };
+    }) => [string];
     onCurrentTimeChange?: (time: Date) => void;
 }) {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -41,7 +45,7 @@ export function MovieTimeline<T extends object>({
                 selectable: true,
                 multiselect: true,
                 moveable: false,
-                cluster: {},
+                cluster: { titleTemplate: clusterTitleTemplate },
                 snap: (date, _scale, _step) => {
                     const minute = 60 * 1000;
                     return Math.round(date.valueOf() / minute) * minute;
