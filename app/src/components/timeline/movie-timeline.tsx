@@ -80,7 +80,7 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("mouseDown", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
                 if (
-                    eventProps.what !== "axis" ||
+                    (eventProps.what !== "axis" && eventProps.what !== "custom-time") ||
                     properties.event.shiftKey ||
                     properties.event.ctrlKey
                 ) {
