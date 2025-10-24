@@ -12,7 +12,8 @@ export function MovieTimeline<T extends TimelineItem>({
     onSelect,
     timelineOptions,
     clusterTemplate,
-    onCurrentTimeChange,
+    markerStart,
+    onMarkerStartChange,
 }: {
     timelineRef?: RefObject<Timeline | null>;
     items: DataSet<T>;
@@ -20,14 +21,13 @@ export function MovieTimeline<T extends TimelineItem>({
     onSelect?: (itemIds: string[]) => void;
     timelineOptions?: TimelineOptions;
     clusterTemplate?: (props: { items: TimelineItem[]; group: { groupId: string } }) => [string];
-    onCurrentTimeChange?: (time: Date) => void;
+    markerStart?: Date;
+    onMarkerStartChange?: (time: Date) => void;
 }) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     timelineRef ??= useRef<Timeline | null>(null);
     const timeline = timelineRef.current;
-
-    const [markerTime, setMarkerTime] = useState<Date>();
 
     useEffect(() => {
         if (containerRef.current && !timelineRef.current) {
@@ -77,6 +77,10 @@ export function MovieTimeline<T extends TimelineItem>({
             // Add events for time marker
 
             let isDragging = false;
+            const setMarker = (time: Date) => {
+                timeline.setCustomTime(time, "marker");
+                onMarkerStartChange?.(time);
+            };
             timeline.on("mouseDown", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
                 if (
@@ -90,7 +94,7 @@ export function MovieTimeline<T extends TimelineItem>({
 
                 timeline.setOptions({ moveable: false, cluster });
                 try {
-                    timeline.setCustomTime(eventProps.time, "marker");
+                    setMarker(eventProps.time);
                 } catch {
                     timeline.addCustomTime(eventProps.time, "marker");
                 }
@@ -102,7 +106,7 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("mouseMove", function (properties) {
                 if (isDragging) {
                     const eventProps = timeline.getEventProperties(properties.event);
-                    timeline.setCustomTime(eventProps.time, "marker");
+                    setMarker(eventProps.time);
                 }
             });
             timeline.on("doubleClick", function (properties) {

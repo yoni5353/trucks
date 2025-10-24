@@ -48,7 +48,6 @@ export function GroupSearch({ inputClassName }: { inputClassName?: string }) {
                                         <CommandItem
                                             key={option.value}
                                             onSelect={() => {
-                                                console.log("what");
                                                 setOpen(false);
                                                 setSelected(option);
                                             }}

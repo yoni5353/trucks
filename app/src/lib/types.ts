@@ -27,3 +27,9 @@ export type EntityEvent = Omit<TimelineItem, "content"> & {
               t?: undefined;
           }
     );
+
+export type GeographicEvent = Extract<EntityEvent, { t: "point" | "loc" }>;
+
+export function isGeographicEvent(event: EntityEvent): event is GeographicEvent {
+    return event.t === "point" || event.t === "loc";
+}

@@ -70,7 +70,7 @@ const arrowHeadStyle = (x: number, y: number, rotation: number) =>
         }),
     });
 
-export function historyArrowStyle(feature: Feature<Geometry>, _resolution: unknown) {
+export function historyArrowStyle(feature: FeatureLike, _resolution: unknown) {
     const styles = [lineStyle];
 
     const geom = feature.getGeometry();

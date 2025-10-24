@@ -15,7 +15,9 @@ import { entitiesQuery, getHistoryOfEntity } from "@/lib/requests";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 import { Pane } from "./pane/pane";
-import type { TimeRange } from "./parameters";
+import { focusedTimeStore } from "./focus";
+import type { GeographicEvent } from "@/lib/types";
+import { throttle } from "lodash-es";
 
 const DRAWER_DEFAULT_HEIGHT = 40;
 
@@ -44,19 +46,38 @@ export default function Page() {
         updateEntityOpacity(entities, id);
 
         if (id) {
-            const [type, entityId] = id?.split("-", 2) as [string, string];
-            const focusedFeatureHistory = await getHistoryOfEntity(queryClient, type, entityId);
-            if (focusedFeatureHistory) {
-                registerHistoryOfEntities(histories, { [id]: focusedFeatureHistory });
-            } else {
-                clearAllHistory(histories);
-            }
-        } else {
             setIsDrawerTransitioning(true);
             drawerRef.current?.collapse();
-            clearAllHistory(histories);
         }
     };
+
+    useEffect(
+        function trackHistoryOfFocusedFeature() {
+            if (!focusedFeatureId) {
+                clearAllHistory(histories);
+                return;
+            } else {
+                let history: GeographicEvent[] | undefined = undefined;
+                const [type, entityId] = focusedFeatureId?.split("-", 2) as [string, string];
+                const updateHistory = throttle(async (time: Date) => {
+                    history ??= await getHistoryOfEntity(queryClient, type, entityId);
+                    if (history) {
+                        registerHistoryOfEntities(histories, { [focusedFeatureId]: history }, time);
+                    } else {
+                        clearAllHistory(histories);
+                    }
+                }, 100);
+
+                updateHistory(new Date());
+                return focusedTimeStore.subscribe((state, prev) => {
+                    if (state.start && state.start !== prev.start) {
+                        updateHistory(state.start);
+                    }
+                });
+            }
+        },
+        [focusedFeatureId, histories, queryClient],
+    );
 
     return (
         <>

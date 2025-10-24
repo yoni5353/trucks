@@ -90,6 +90,7 @@ export function PageSidebar({
                                         document
                                             ?.getElementsByClassName("group-search-input")
                                             .item(0)
+                                            // @ts-expect-error HTMLInputElement
                                             ?.focus();
                                     }, 100);
                                 }}

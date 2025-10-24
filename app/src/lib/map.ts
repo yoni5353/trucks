@@ -16,6 +16,7 @@ import {
     unfocusedEntityStyle,
 } from "./map-styles";
 import { getTileLayers } from "./rasters";
+import type { GeographicEvent } from "./types";
 
 // Feature Ids Breakdown:
 // - Entities: Regular entities on the map
@@ -164,38 +165,52 @@ export function flyToEntity(map: Map, entities: VectorSource, entityId: string) 
 /* Registers all given histories for given entities, drawing previous points and arrows */
 export function registerHistoryOfEntities(
     histories: VectorSource,
-    data: { [featureId: string]: Array<{ coords: number[]; time: string }> },
+    data: { [featureId: string]: Array<GeographicEvent> },
+    relativeTime?: Date,
 ) {
     histories.clear();
     const features: Feature[] = [];
-    Object.entries(data).forEach(([featureId, points]) => {
-        points.sort((a, b) => a.time.localeCompare(b.time));
-        const strength = 0.5;
-        const strengthStep = (1 - strength) / (points.length - 1);
+    Object.entries(data).forEach(([featureId, events]) => {
+        events.sort((a, b) => a.start.localeCompare(b.start));
+
+        relativeTime ??= new Date();
+        const closestEvent =
+            events.find((event) => new Date(event.start) >= relativeTime!) ?? events.at(-1);
+        const closestIndex = events.indexOf(closestEvent!);
+
+        // Opacity is calculated by amount of nodes to closest event
+        const minStrength = 0.5;
+        const maxNodeDistance = Math.max(closestIndex, events.length - closestIndex - 1);
+        const strengthStep = (1 - minStrength) / maxNodeDistance;
+
+        // Get centers of each location
+        const centers = events.map((point) => {
+            if (!("coords" in point)) throw new Error("Invalid point");
+            return fromLonLat([point.coords[0], point.coords[1]]);
+        });
 
         // Add previous points
-        points.forEach((point, index) => {
-            const opacity = strength + index * strengthStep;
+        events.forEach((point, index) => {
+            const center = centers[index];
+            const opacity = 1 - Math.abs(index - closestIndex) * strengthStep;
+
             const feature = new Feature({
-                geometry: new Point(fromLonLat([point.coords[0], point.coords[1]])),
+                geometry: new Point(center),
             });
-            feature.setId(`${featureId}-${point.time}`);
-            const style = entityStyle.clone();
+            feature.setId(`${featureId}-${point.start}`);
+            const style = (index == closestIndex ? selectedEntityStyle : entityStyle).clone();
             style.getImage()?.setOpacity(opacity);
             feature.setStyle(style);
             features.push(feature);
         });
         // Connect points with arrows
-        for (let i = 0; i < points.length - 1; i++) {
-            const start = points[i];
-            const end = points[i + 1];
+        for (let i = 0; i < events.length - 1; i++) {
+            const start = events[i];
+            const end = events[i + 1];
             const arrow = new Feature({
-                geometry: new LineString([
-                    fromLonLat([start.coords[0], start.coords[1]]),
-                    fromLonLat([end.coords[0], end.coords[1]]),
-                ]),
+                geometry: new LineString([centers[i], centers[i + 1]]),
             });
-            arrow.setId(`${featureId}-${start.time}-${end.time}`);
+            arrow.setId(`${featureId}-${start.start}-${end.start}`);
             arrow.setStyle(historyArrowStyle);
             features.push(arrow);
         }

@@ -1,5 +1,5 @@
 import { QueryClient, queryOptions } from "@tanstack/react-query";
-import type { EntityEvent } from "./types";
+import { isGeographicEvent, type EntityEvent } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const url = import.meta.env.VITE_BE_URL || "http://localhost:8080";
@@ -35,9 +35,9 @@ export const getHistoryOfEntity = async (
     entityType: string,
     entityId: string,
 ) => {
-    return (await queryClient.fetchQuery(entitiesQuery)).find(
-        (entity) => entity.id === entityId && entity.type === entityType,
-    )?.history;
+    return (await queryClient.fetchQuery(eventsOfEntityQuery(entityType, entityId))).filter(
+        isGeographicEvent,
+    );
 };
 
 export const eventsOfEntityQuery = (entityType: string, entityId: string) =>

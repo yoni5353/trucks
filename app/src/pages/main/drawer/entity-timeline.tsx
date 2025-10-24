@@ -10,6 +10,7 @@ import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
 import type { EntityEvent, EventGroup } from "@/lib/types";
+import { focusedTimeStore, focusStore } from "../focus";
 
 const EVENT_GROUPS = [
     {
@@ -44,6 +45,10 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
 
     const timelineRef = useRef<Timeline | null>(null);
 
+    // const focusedTimeStart = useStore(focusStore, (s) => s.focusedTimeStart);
+    // const setFocusedTimeStart = useStore(focusStore, (s) => s.setFocusedTimeStart);
+    const focusedTime = useStore(focusedTimeStore);
+
     useEffect(
         function focusEventOnClick() {
             if (timelineRef.current) {
@@ -72,12 +77,12 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
         function resizeTimelineWindowOnTimeRangeChange() {
             if (timelineRef.current) {
                 // TOFIX: the cluster setting is forgotten here
-                timelineRef.current.setOptions({
-                    min,
-                    start: min,
-                    end: max,
-                    max,
-                });
+                // timelineRef.current.setOptions({
+                //     min,
+                //     start: min,
+                //     end: max,
+                //     max,
+                // });
             }
         },
         [max, min, timeRange],
@@ -114,6 +119,8 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
                     `<div style="display: flex; align-items: center; gap: 2px;">${items.length.toString()} ${EVENT_GROUPS.find((g) => g.id === group.groupId)?.clusterIcon}</div>`,
                 ];
             }}
+            markerStart={focusedTime.start}
+            onMarkerStartChange={focusedTime.setStart}
             // onSelect={(itemIds) => {
             //     const selected = items.get(itemIds);
             //     const groupIds = new Set(selected.map((item) => item.group));
