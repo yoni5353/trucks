@@ -49,7 +49,7 @@ export function OLMap({
                     const coordinates = e.selected[0].getGeometry()?.getCoordinates();
                     tooltip.setPosition(coordinates);
                     const featureId = e.selected[0].get("features")[0].getId();
-                    setTooltipEntityId(featureId);
+                    // setTooltipEntityId(featureId); disable tooltip for now
                     onClickSingleEntity(featureId);
                 } else {
                     tooltip.setPosition(undefined);
@@ -63,7 +63,7 @@ export function OLMap({
                 map.removeOverlay(tooltip);
             };
         }
-    }, [map, onClickSingleEntity, select]);
+    }, [map, onClickSingleEntity, onViewEntity, select]);
 
     return (
         <>
