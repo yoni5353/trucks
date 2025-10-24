@@ -51,10 +51,10 @@ export const eventsOfEntityQuery = (entityType: string, entityId: string) =>
             // prettier-ignore
             return events.concat(
                 [
-                    { id: "g1", group: "location", t: "point", coords: [34.7818, 31.0853], start: beforeXMinutes(180), },
-                    { id: "g2", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(120), },
-                    { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(70), },
-                    { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(60) },
+                    { id: "g1", group: "location", t: "point", coords: [34.7818, 31.0853], start: beforeXMinutes(250), },
+                    { id: "g2", group: "location", t: "point", coords: [34.7518, 31.143], start: beforeXMinutes(170), },
+                    { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(160), },
+                    { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(110) },
                     { id: "g5", group: "location", t: "point", coords: [34.8, 31.28], start: beforeXMinutes(60) },
                 ],
                 [

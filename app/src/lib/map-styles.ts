@@ -23,6 +23,14 @@ export const selectedEntityStyle = new Style({
     }),
 });
 
+export const virtualEntityStyle = new Style({
+    image: new CircleStyle({
+        radius: 8,
+        fill: new Fill({ color: "hsl(97 22% 40% / 0.5)" }),
+        stroke: new Stroke({ color: "silver", width: 2, lineDash: [4, 4] }),
+    }),
+});
+
 export const clusterStyle: StyleLike = (feature: FeatureLike) => {
     const size = feature.get("features").length;
     if (size === 1) return feature.get("features")[0].getStyle();

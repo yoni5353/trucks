@@ -14,6 +14,7 @@ import {
     selectedEntityStyle,
     historyArrowStyle,
     unfocusedEntityStyle,
+    virtualEntityStyle,
 } from "./map-styles";
 import { getTileLayers } from "./rasters";
 import type { GeographicEvent } from "./types";
@@ -173,14 +174,20 @@ export function registerHistoryOfEntities(
     Object.entries(data).forEach(([featureId, events]) => {
         events.sort((a, b) => a.start.localeCompare(b.start));
 
+        // Get previous event and next event to happen. Previous event will be highlighted.
         relativeTime ??= new Date();
-        const closestEvent =
-            events.find((event) => new Date(event.start) >= relativeTime!) ?? events.at(-1);
-        const closestIndex = events.indexOf(closestEvent!);
+        const nextEvent = events.find((event) => new Date(event.start) >= relativeTime!);
+        const nextEventIndex = nextEvent ? events.indexOf(nextEvent) : undefined;
+        const previousEvent = events[(nextEventIndex ?? events.length) - 1] ?? events[0];
+        const previousEventIndex = events.indexOf(previousEvent);
+        const previousEventTime = new Date(previousEvent.start);
 
         // Opacity is calculated by amount of nodes to closest event
         const minStrength = 0.5;
-        const maxNodeDistance = Math.max(closestIndex, events.length - closestIndex - 1);
+        const maxNodeDistance = Math.max(
+            previousEventIndex,
+            events.length - previousEventIndex - 1,
+        );
         const strengthStep = (1 - minStrength) / maxNodeDistance;
 
         // Get centers of each location
@@ -192,13 +199,13 @@ export function registerHistoryOfEntities(
         // Add previous points
         events.forEach((point, index) => {
             const center = centers[index];
-            const opacity = 1 - Math.abs(index - closestIndex) * strengthStep;
+            const opacity = 1 - Math.abs(index - previousEventIndex) * strengthStep;
 
             const feature = new Feature({
                 geometry: new Point(center),
             });
             feature.setId(`${featureId}-${point.start}`);
-            const style = (index == closestIndex ? selectedEntityStyle : entityStyle).clone();
+            const style = (index == previousEventIndex ? selectedEntityStyle : entityStyle).clone();
             style.getImage()?.setOpacity(opacity);
             feature.setStyle(style);
             features.push(feature);
@@ -213,6 +220,26 @@ export function registerHistoryOfEntities(
             arrow.setId(`${featureId}-${start.start}-${end.start}`);
             arrow.setStyle(historyArrowStyle);
             features.push(arrow);
+        }
+
+        // If in between events add virtual event according to given time (linear interpolation)
+        if (nextEvent && nextEventIndex && nextEventIndex > 0) {
+            const nextEventTime = new Date(nextEvent.start);
+            const m =
+                (relativeTime.getTime() - previousEventTime.getTime()) /
+                (nextEventTime.getTime() - previousEventTime.getTime());
+            const x =
+                centers[previousEventIndex][0] +
+                m * (centers[nextEventIndex][0] - centers[previousEventIndex][0]);
+            const y =
+                centers[previousEventIndex][1] +
+                m * (centers[nextEventIndex][1] - centers[previousEventIndex][1]);
+            const virtualEvent = new Feature({
+                geometry: new Point([x, y]),
+            });
+            virtualEvent.setId(`${featureId}-virtual`);
+            virtualEvent.setStyle(virtualEntityStyle);
+            features.push(virtualEvent);
         }
     });
     histories.addFeatures(features);
