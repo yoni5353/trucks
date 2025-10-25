@@ -96,3 +96,13 @@ export function historyArrowStyle(feature: FeatureLike, _resolution: unknown) {
 
     return styles;
 }
+
+export const drawnPolygonStyle = new Style({
+    stroke: new Stroke({
+        color: "hsl(100 20% 35%)",
+        width: 2,
+    }),
+    fill: new Fill({
+        color: "hsl(100 20% 35% / 0.1)",
+    }),
+});

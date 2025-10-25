@@ -18,6 +18,9 @@ import { Pane } from "./pane/pane";
 import { focusedTimeStore } from "./focus";
 import type { GeographicEvent } from "@/lib/types";
 import { throttle } from "lodash-es";
+import { parametersStore } from "./parameters";
+import { WKT } from "ol/format";
+import { useStore } from "zustand";
 
 const DRAWER_DEFAULT_HEIGHT = 40;
 
@@ -27,8 +30,9 @@ export default function Page() {
     const paneRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
-    const [{ map, select, entities, histories, entitiesCluster, store }] = useState(initMap);
-    const { data: entitiesData } = useQuery(entitiesQuery);
+    const [{ map, select, entities, histories, entitiesCluster, store, draw }] = useState(initMap);
+    const parameters = useStore(parametersStore);
+    const { data: entitiesData } = useQuery(entitiesQuery(parameters));
     useEffect(
         function loadEntities() {
             if (entitiesData) {
@@ -77,6 +81,24 @@ export default function Page() {
             }
         },
         [focusedFeatureId, histories, queryClient],
+    );
+
+    useEffect(
+        function syncDrawPolygonWithParameterWkt() {
+            const wkt = new WKT();
+            return store.subscribe((state, prev) => {
+                if (state.drawnPolygon !== prev.drawnPolygon) {
+                    const geometry = state.drawnPolygon?.getGeometry();
+                    if (geometry) {
+                        const wktString = wkt.writeGeometry(geometry);
+                        parametersStore.getState().setSelectedWkt(wktString);
+                    } else {
+                        parametersStore.getState().setSelectedWkt();
+                    }
+                }
+            });
+        },
+        [store],
     );
 
     return (
@@ -173,7 +195,12 @@ export default function Page() {
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </SidebarInset>
-                <PageSidebar entities={entities} entitiesCluster={entitiesCluster} />
+                <PageSidebar
+                    map={map}
+                    draw={draw}
+                    entities={entities}
+                    entitiesCluster={entitiesCluster}
+                />
             </SidebarProvider>
         </>
     );

@@ -1,10 +1,10 @@
 import Map from "ol/Map";
 import View from "ol/View";
-import { DragBox, Select } from "ol/interaction";
+import { DragBox, Draw, Select } from "ol/interaction";
 import { Layer, Vector as VectorLayer } from "ol/layer";
 import { Cluster, Vector as VectorSource } from "ol/source";
 import { fromLonLat } from "ol/proj";
-import { LineString, Point } from "ol/geom";
+import { Geometry, LineString, Point } from "ol/geom";
 import { Feature } from "ol";
 import { platformModifierKeyOnly, shiftKeyOnly } from "ol/events/condition";
 import { createStore } from "zustand";
@@ -15,6 +15,7 @@ import {
     historyArrowStyle,
     unfocusedEntityStyle,
     virtualEntityStyle,
+    drawnPolygonStyle,
 } from "./map-styles";
 import { getTileLayers } from "./rasters";
 import type { GeographicEvent } from "./types";
@@ -30,9 +31,13 @@ import type { GeographicEvent } from "./types";
 type FeatureId = string | number;
 const initStore = () =>
     createStore<{
+        drawnPolygon: Feature<Geometry> | undefined;
+        setDrawnPolygon: (drawnPolygons: Feature<Geometry>) => void;
         selectedEntities: FeatureId[];
         setSelectedEntities: (selectedEntities: FeatureId[]) => void;
     }>((set) => ({
+        drawnPolygon: undefined,
+        setDrawnPolygon: (drawnPolygon: Feature<Geometry>) => set({ drawnPolygon }),
         selectedEntities: [],
         setSelectedEntities: (selectedEntities: FeatureId[]) => set({ selectedEntities }),
     }));
@@ -55,9 +60,12 @@ export function initMap() {
 
     const store: MapStore = initStore();
 
+    const drawings = new VectorSource();
+    const drawingsLayer = new VectorLayer({ source: drawings, style: drawnPolygonStyle });
+
     const map = new Map({
         target: undefined,
-        layers: [clusters, historiesLayer],
+        layers: [drawingsLayer, clusters, historiesLayer],
         view: new View({
             center: fromLonLat([35, 31]),
             zoom: 7.5,
@@ -69,10 +77,20 @@ export function initMap() {
     });
 
     const { select } = initSelectInteractions(map, store, entities, {
-        excludeLayers: [historiesLayer],
+        excludeLayers: [historiesLayer, drawingsLayer],
     });
 
-    return { map, select, entities, entitiesCluster, histories, store };
+    const draw = new Draw({
+        source: drawings,
+        type: "Polygon",
+    });
+    draw.on("drawend", (event) => {
+        drawings.clear();
+        store.getState().setDrawnPolygon(event.feature);
+        togglePolygonDrawing(map, draw, false);
+    });
+
+    return { map, select, entities, entitiesCluster, histories, store, draw };
 }
 
 /**
@@ -263,5 +281,15 @@ export function updateEntityOpacity(entities: VectorSource, focusedEntityId: str
         features.forEach((feature) => {
             feature.setStyle(entityStyle);
         });
+    }
+}
+
+// DRAWINGS
+
+export function togglePolygonDrawing(map: Map, draw: Draw, toggle: boolean) {
+    if (toggle) {
+        map.addInteraction(draw);
+    } else {
+        map.removeInteraction(draw);
     }
 }

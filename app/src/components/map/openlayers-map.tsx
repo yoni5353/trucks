@@ -48,7 +48,7 @@ export function OLMap({
                 if (e.selected.length === 1 && selectedFeatures.getLength() === 1) {
                     const coordinates = e.selected[0].getGeometry()?.getCoordinates();
                     tooltip.setPosition(coordinates);
-                    const featureId = e.selected[0].get("features")[0].getId();
+                    const featureId = e.selected[0].get("features")?.[0].getId();
                     // setTooltipEntityId(featureId); disable tooltip for now
                     onClickSingleEntity(featureId);
                 } else {

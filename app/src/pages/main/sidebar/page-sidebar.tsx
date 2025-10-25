@@ -16,19 +16,26 @@ import { addRandomEntity } from "@/lib/map";
 import type VectorSource from "ol/source/Vector";
 import type { Cluster } from "ol/source";
 import { useState } from "react";
-import { BotIcon, MapPinned, SearchIcon, TruckElectricIcon, Moon, Sun } from "lucide-react";
+import { BotIcon, SearchIcon, TruckElectricIcon, Moon, Sun } from "lucide-react";
 import { GroupSearch } from "./group-search";
 import { DateRangePicker } from "./date-range-picker";
 import { PanelRight } from "lucide-static";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
+import type { Draw } from "ol/interaction";
+import { GeometrySelection } from "./geometry-selection";
+import type { Map } from "ol";
 
 export function PageSidebar({
+    map,
     entities,
     entitiesCluster,
+    draw,
 }: {
+    map: Map;
     entities: VectorSource;
     entitiesCluster: Cluster;
+    draw: Draw;
 }) {
     const [, _setCounter] = useState(0);
     const rerender = () => _setCounter((c) => c + 1);
@@ -99,10 +106,7 @@ export function PageSidebar({
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="mx-auto" variant="outline">
-                                <MapPinned />
-                                <span>בחר אזור</span>
-                            </SidebarMenuButton>
+                            <GeometrySelection map={map} draw={draw} />
                         </SidebarMenuItem>
                     </SidebarGroupContent>
                 </SidebarGroup>
