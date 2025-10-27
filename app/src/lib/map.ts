@@ -63,12 +63,15 @@ export function initMap() {
     const drawings = new VectorSource();
     const drawingsLayer = new VectorLayer({ source: drawings, style: drawnPolygonStyle });
 
+    const [lon, lat, zoom] = import.meta.env.VITE_INITIAL_MAP_VIEW?.split(",").map(Number) ?? [
+        35, 31, 7.5,
+    ];
     const map = new Map({
         target: undefined,
         layers: [drawingsLayer, clustersLayer, historiesLayer],
         view: new View({
-            center: fromLonLat([35, 31]),
-            zoom: 7.5,
+            center: fromLonLat([lon, lat]),
+            zoom,
         }),
         controls: [],
     });
