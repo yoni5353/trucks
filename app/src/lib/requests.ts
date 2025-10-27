@@ -10,7 +10,7 @@ export const entitiesQuery = (parameters?: PageParameters) =>
         queryKey: ["entities", parameters],
         queryFn: async () => {
             return Array.from({ length: 500 }).map((_, i) => {
-                const location = [34.8 + Math.random() * 5, 31.2 + Math.random() * 5];
+                const location = [34.8 + Math.random() * 0.5, 30.2 + Math.random() * 0.5];
                 return {
                     type: "truck",
                     id: `${i + 1}`,

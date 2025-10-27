@@ -46,8 +46,8 @@ export type MapStore = ReturnType<typeof initStore>;
 export function initMap() {
     const entities = new VectorSource();
     const entitiesCluster = new Cluster({
-        distance: 10,
-        minDistance: 5,
+        distance: 20,
+        minDistance: 1,
         source: entities,
     });
     const clustersLayer = new VectorLayer({
