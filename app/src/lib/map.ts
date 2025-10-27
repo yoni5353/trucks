@@ -181,6 +181,20 @@ export function flyToEntity(map: Map, entities: VectorSource, entityId: string) 
     });
 }
 
+export function dimUnselectedEntities(entities: VectorSource, focusedEntityId: string | undefined) {
+    const features = entities.getFeatures();
+    if (focusedEntityId) {
+        features.forEach((feature) => {
+            feature.set("dimmed", feature.getId() !== focusedEntityId, true);
+        });
+    } else {
+        features.forEach((feature) => {
+            feature.set("dimmed", false, true);
+        });
+    }
+    entities.changed();
+}
+
 // ENTITY HISTORY
 
 /* Registers all given histories for given entities, drawing previous points and arrows */
@@ -269,22 +283,6 @@ export function registerHistoryOfEntities(
 
 export function clearAllHistory(histories: VectorSource) {
     histories.clear();
-}
-
-// ENTITY FOCUS
-
-export function dimUnselectedEntities(entities: VectorSource, focusedEntityId: string | undefined) {
-    const features = entities.getFeatures();
-    if (focusedEntityId) {
-        features.forEach((feature) => {
-            feature.set("dimmed", feature.getId() !== focusedEntityId, true);
-        });
-    } else {
-        features.forEach((feature) => {
-            feature.set("dimmed", false, true);
-        });
-    }
-    entities.changed();
 }
 
 // DRAWINGS
