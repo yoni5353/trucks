@@ -3,16 +3,25 @@ import { Point } from "ol/geom";
 import { Style, Circle as CircleStyle, Fill, Stroke, Text, Icon } from "ol/style";
 import type { StyleLike } from "ol/style/Style";
 
-export const entityStyle = new Style({
-    image: new CircleStyle({
-        radius: 8,
-        fill: new Fill({ color: "hsl(97 22% 40%)" }),
-        stroke: new Stroke({ color: "silver", width: 2 }),
+export const entityStyle = [
+    new Style({
+        image: new CircleStyle({
+            radius: 8,
+            fill: new Fill({ color: "hsl(97 22% 40%)" }),
+            stroke: new Stroke({ color: "silver", width: 2 }),
+        }),
     }),
-});
+    new Style({
+        image: new Icon({
+            src: "/trucks/truck.png",
+            scale: 0.4,
+            color: "white",
+        }),
+    }),
+];
 
-export const unfocusedEntityStyle = entityStyle.clone();
-unfocusedEntityStyle.getImage()?.setOpacity(0.3);
+export const unfocusedEntityStyle = [entityStyle[0].clone(), entityStyle[1].clone()];
+unfocusedEntityStyle.forEach((s) => s.getImage()?.setOpacity(0.3));
 
 export const selectedEntityStyle = new Style({
     image: new CircleStyle({

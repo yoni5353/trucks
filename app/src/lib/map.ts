@@ -223,7 +223,9 @@ export function registerHistoryOfEntities(
                 geometry: new Point(center),
             });
             feature.setId(`${featureId}-${point.start}`);
-            const style = (index == previousEventIndex ? selectedEntityStyle : entityStyle).clone();
+            const style = (
+                index == previousEventIndex ? selectedEntityStyle : entityStyle[0]
+            ).clone();
             style.getImage()?.setOpacity(opacity);
             feature.setStyle(style);
             features.push(feature);
