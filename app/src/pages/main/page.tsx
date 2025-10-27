@@ -65,7 +65,12 @@ export default function Page() {
                 let history: GeographicEvent[] | undefined = undefined;
                 const [type, entityId] = focusedFeatureId?.split("-", 2) as [string, string];
                 const updateHistory = throttle(async (time: Date) => {
-                    history ??= await getHistoryOfEntity(queryClient, type, entityId);
+                    history ??= await getHistoryOfEntity(
+                        queryClient,
+                        type,
+                        entityId,
+                        parameters.timeRange,
+                    );
                     if (history) {
                         registerHistoryOfEntities(histories, { [focusedFeatureId]: history }, time);
                     } else {

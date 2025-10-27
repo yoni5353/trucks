@@ -41,7 +41,8 @@ const EVENT_GROUPS = [
 ] satisfies { id: EventGroup; content: string; clusterIcon?: string }[];
 
 export function EntityTimeline({ enityId, entityType }: { enityId: string; entityType: string }) {
-    const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId));
+    const timeRange = useStore(parametersStore, (s) => s.timeRange);
+    const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId, timeRange));
 
     const timelineRef = useRef<Timeline | null>(null);
 
@@ -66,7 +67,6 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
         [timelineRef, events],
     );
 
-    const timeRange = useStore(parametersStore, (s) => s.timeRange);
     // Add buffers for edges of items
     const min = useMemo(() => new Date(timeRange.start.getTime() - 30 * 60 * 1000), [timeRange]);
     const max = useMemo(

@@ -24,15 +24,20 @@ export const getHistoryOfEntity = async (
     queryClient: QueryClient,
     entityType: string,
     entityId: string,
+    timeRange: PageParameters["timeRange"],
 ) => {
-    return (await queryClient.fetchQuery(eventsOfEntityQuery(entityType, entityId))).filter(
-        isGeographicEvent,
-    );
+    return (
+        await queryClient.fetchQuery(eventsOfEntityQuery(entityType, entityId, timeRange))
+    ).filter(isGeographicEvent);
 };
 
-export const eventsOfEntityQuery = (entityType: string, entityId: string) =>
+export const eventsOfEntityQuery = (
+    entityType: string,
+    entityId: string,
+    timeRange: PageParameters["timeRange"],
+) =>
     queryOptions<EntityEvent[]>({
-        queryKey: ["events", entityType, entityId],
+        queryKey: ["events", entityType, entityId, timeRange],
         queryFn: async () => {
             const beforeXMinutes = (minutes: number) =>
                 new Date(Date.now() - minutes * 60 * 1000).toISOString();
