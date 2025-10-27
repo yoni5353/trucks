@@ -18,6 +18,8 @@ import {
 } from "./map-styles";
 import { getTileLayers } from "./rasters";
 import type { GeographicEvent } from "./types";
+import { WKT } from "ol/format";
+import { getCenter } from "ol/extent";
 
 // Feature Ids Breakdown:
 // - Entities: Regular entities on the map
@@ -224,21 +226,37 @@ export function registerHistoryOfEntities(
         );
         const strengthStep = (1 - minStrength) / maxNodeDistance;
 
+        const wkt = new WKT();
+        const geoemtries = events.map((point) => {
+            if (point.t === "point") {
+                return new Point(fromLonLat([point.coords[0], point.coords[1]]));
+            } else if (point.t === "loc") {
+                return wkt.readGeometry(point.wkt, {
+                    dataProjection: "EPSG:4326",
+                    featureProjection: "EPSG:3857",
+                });
+            }
+        });
+
         // Get centers of each location
-        const centers = events.map((point) => {
-            if (!("coords" in point)) throw new Error("Invalid point");
-            return fromLonLat([point.coords[0], point.coords[1]]);
+        const centers = events.map((_, index) => {
+            const geometry = geoemtries[index];
+            if (geometry instanceof Point) {
+                return geometry.getCoordinates();
+            } else if (geometry) {
+                return getCenter(geometry.getExtent());
+            } else {
+                throw new Error(`Unexpected geometry type: ${geometry}`);
+            }
         });
 
         // Add previous points
         events.forEach((point, index) => {
-            const center = centers[index];
             const opacity = 1 - Math.abs(index - previousEventIndex) * strengthStep;
 
-            const feature = new Feature({
-                geometry: new Point(center),
-            });
+            const feature = new Feature({ geometry: geoemtries[index] });
             feature.setId(`${featureId}-${point.start}`);
+            feature.setStyle(drawnPolygonStyle);
             const style = (
                 index == previousEventIndex ? selectedEntityStyle : entityStyle[0]
             ).clone();

@@ -51,6 +51,14 @@ export const eventsOfEntityQuery = (
                     { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(160), },
                     { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(110) },
                     { id: "g5", group: "location", t: "point", coords: [34.8, 31.28], start: beforeXMinutes(60) },
+                    { id: "gg1", group: "location", t: "loc", wkt: "POLYGON((34.7777 32.0846, 34.77929 32.0846, 34.77929 32.08595, 34.7777 32.08595, 34.7777 32.0846))", start: beforeXMinutes(50) },
+                    { id: "gg2", group: "location", t: "loc", wkt: "POLYGON((34.77949 32.0846, 34.78108 32.0846, 34.78108 32.08595, 34.77949 32.08595, 34.77949 32.0846))", start: beforeXMinutes(45) },
+                    { id: "gg3", group: "location", t: "loc", wkt: "POLYGON((34.78128 32.0846, 34.78287 32.0846, 34.78287 32.08595, 34.78128 32.08595, 34.78128 32.0846))", start: beforeXMinutes(40) },
+                    { id: "gg4", group: "location", t: "loc", wkt: "POLYGON((34.78307 32.0846, 34.78466 32.0846, 34.78466 32.08595, 34.78307 32.08595, 34.78307 32.0846))", start: beforeXMinutes(35) },
+                    { id: "gg5", group: "location", t: "loc", wkt: "POLYGON((34.78486 32.0846, 34.78645 32.0846, 34.78645 32.08595, 34.78486 32.08595, 34.78486 32.0846))", start: beforeXMinutes(30) },
+                    { id: "gg6", group: "location", t: "loc", wkt: "POLYGON((34.78665 32.0846, 34.78824 32.0846, 34.78824 32.08595, 34.78665 32.08595, 34.78665 32.0846))", start: beforeXMinutes(25) },
+                    { id: "gg7", group: "location", t: "loc", wkt: "POLYGON((34.78844 32.0846, 34.79003 32.0846, 34.79003 32.08595, 34.78844 32.08595, 34.78844 32.0846))", start: beforeXMinutes(20) },
+                    { id: "gg8", group: "location", t: "loc", wkt: "POLYGON((34.79023 32.0846, 34.79182 32.0846, 34.79182 32.08595, 34.79023 32.08595, 34.79023 32.0846))", start: beforeXMinutes(15) }
                 ],
                 [
                     { id: "a1", group: "audio", t: "audio", start: beforeXMinutes(210), end: beforeXMinutes(175), },

@@ -10,6 +10,13 @@ export const entityStyle = [
             fill: new Fill({ color: "hsl(97 22% 40%)" }),
             stroke: new Stroke({ color: "silver", width: 2 }),
         }),
+        stroke: new Stroke({
+            color: "hsl(100 20% 35%)",
+            width: 2,
+        }),
+        fill: new Fill({
+            color: "hsl(100 20% 35% / 0.1)",
+        }),
     }),
     new Style({
         image: new Icon({
@@ -28,6 +35,13 @@ export const selectedEntityStyle = new Style({
         radius: 10,
         fill: new Fill({ color: "hsl(95 25% 45%)" }),
         stroke: new Stroke({ color: "silver", width: 2 }),
+    }),
+    stroke: new Stroke({
+        color: "hsl(95 25% 45%)",
+        width: 2,
+    }),
+    fill: new Fill({
+        color: "hsl(95 25% 45% / 0.1)",
     }),
 });
 
@@ -111,6 +125,8 @@ export function historyArrowStyle(feature: FeatureLike, _resolution: unknown) {
 
     return styles;
 }
+
+// DRAWINGS
 
 export const drawnPolygonStyle = new Style({
     stroke: new Stroke({
