@@ -50,7 +50,7 @@ export function initMap() {
         minDistance: 5,
         source: entities,
     });
-    const clusters = new VectorLayer({
+    const clustersLayer = new VectorLayer({
         source: entitiesCluster,
         style: clusterStyle,
     });
@@ -65,7 +65,7 @@ export function initMap() {
 
     const map = new Map({
         target: undefined,
-        layers: [drawingsLayer, clusters, historiesLayer],
+        layers: [drawingsLayer, clustersLayer, historiesLayer],
         view: new View({
             center: fromLonLat([35, 31]),
             zoom: 7.5,
@@ -269,19 +269,18 @@ export function clearAllHistory(histories: VectorSource) {
 
 // ENTITY FOCUS
 
-export function updateEntityOpacity(entities: VectorSource, focusedEntityId: string | undefined) {
+export function dimUnselectedEntities(entities: VectorSource, focusedEntityId: string | undefined) {
     const features = entities.getFeatures();
-
     if (focusedEntityId) {
         features.forEach((feature) => {
-            const isDimmed = feature.getId() !== focusedEntityId;
-            feature.setStyle(isDimmed ? unfocusedEntityStyle : selectedEntityStyle);
+            feature.set("dimmed", feature.getId() !== focusedEntityId, true);
         });
     } else {
         features.forEach((feature) => {
-            feature.setStyle(entityStyle);
+            feature.set("dimmed", false, true);
         });
     }
+    entities.changed();
 }
 
 // DRAWINGS

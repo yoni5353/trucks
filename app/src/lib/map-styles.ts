@@ -1,6 +1,5 @@
-import type Feature from "ol/Feature";
 import type { FeatureLike } from "ol/Feature";
-import { Geometry, Point } from "ol/geom";
+import { Point } from "ol/geom";
 import { Style, Circle as CircleStyle, Fill, Stroke, Text, Icon } from "ol/style";
 import type { StyleLike } from "ol/style/Style";
 
@@ -33,13 +32,18 @@ export const virtualEntityStyle = new Style({
 
 export const clusterStyle: StyleLike = (feature: FeatureLike) => {
     const size = feature.get("features").length;
-    if (size === 1) return feature.get("features")[0].getStyle();
+    const isDimmed = feature.get("features")[0].get("dimmed");
+    if (size === 1) {
+        if (isDimmed) return unfocusedEntityStyle;
+        const f = feature.get("features")[0];
+        return f.getStyle();
+    }
     return [
         new Style({
             image: new CircleStyle({
                 radius: 10,
                 fill: new Fill({
-                    color: "hsl(97 22% 40% / 0.7)",
+                    color: `hsl(97 22% 40% / ${isDimmed ? 0.3 : 0.7})`,
                 }),
             }),
         }),
@@ -47,7 +51,7 @@ export const clusterStyle: StyleLike = (feature: FeatureLike) => {
             image: new CircleStyle({
                 radius: 14,
                 fill: new Fill({
-                    color: "hsl(100 20% 35% / 0.7)",
+                    color: `hsl(100 20% 35% / ${isDimmed ? 0.3 : 0.7})`,
                 }),
             }),
             text: new Text({

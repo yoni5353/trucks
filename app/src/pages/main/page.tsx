@@ -6,7 +6,7 @@ import {
     clearAllHistory,
     initMap,
     registerHistoryOfEntities,
-    updateEntityOpacity,
+    dimUnselectedEntities,
 } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer/page-drawer";
@@ -31,6 +31,7 @@ export default function Page() {
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
     const [{ map, select, entities, histories, entitiesCluster, store, draw }] = useState(initMap);
+
     const parameters = useStore(parametersStore);
     const { data: entitiesData } = useQuery(entitiesQuery(parameters));
     useEffect(
@@ -47,7 +48,7 @@ export default function Page() {
     const [focusedFeatureId, _setFoucsedFeatureId] = useState<string>();
     const setFocusedFeatureId = async (id: string | undefined) => {
         _setFoucsedFeatureId(id);
-        updateEntityOpacity(entities, id);
+        dimUnselectedEntities(entities, id);
 
         if (id) {
             setIsDrawerTransitioning(true);
