@@ -13,7 +13,6 @@ import {
     entityStyle,
     selectedEntityStyle,
     historyArrowStyle,
-    unfocusedEntityStyle,
     virtualEntityStyle,
     drawnPolygonStyle,
 } from "./map-styles";

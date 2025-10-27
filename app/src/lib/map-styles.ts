@@ -85,7 +85,7 @@ const arrowHeadStyle = (x: number, y: number, rotation: number) =>
         geometry: new Point([x, y]),
         image: new Icon({
             src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><polygon points="0,0 12,7 0,12" stroke="silver" fill="hsl(100 20% 35%)"/></svg>',
-            anchor: [0.75, 0.5],
+            // anchor: [0.75, 0.5],
             rotateWithView: true,
             rotation,
         }),
@@ -104,7 +104,9 @@ export function historyArrowStyle(feature: FeatureLike, _resolution: unknown) {
         const dy = y2 - y1;
         const rotation = Math.atan2(dy, dx);
 
-        styles.push(arrowHeadStyle(x2, y2, -rotation));
+        const x = (x1 + x2) / 2;
+        const y = (y1 + y2) / 2;
+        styles.push(arrowHeadStyle(x, y, -rotation));
     }
 
     return styles;
