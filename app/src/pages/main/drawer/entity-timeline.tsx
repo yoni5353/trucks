@@ -5,7 +5,7 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
 import { Timeline, type TimelineGroup } from "vis-timeline";
-import { Volume2 } from "lucide-static";
+// no icon imports needed; all timeline icons use project SVGs
 const BASE_URL = import.meta.env.BASE_URL || "/";
 const LOCATION_ICON_URL = `${BASE_URL}location.svg`;
 const PHOTO_ICON_URL = `${BASE_URL}photo.svg`;
@@ -18,6 +18,7 @@ import { parametersStore } from "../parameters";
 import type { EntityEvent, EventGroup } from "@/lib/types";
 import { focusedTimeStore } from "../focus";
 import { LoaderIcon } from "lucide-react";
+import { type TimelineItem } from "vis-timeline";
 
 const EVENT_GROUPS = [
     {
@@ -60,8 +61,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     useEffect(
         function focusEventOnClick() {
             if (timelineRef.current) {
-                timelineRef.current.on("click", (properties) => {
-                    const event = timelineRef.current?.getEventProperties(properties.event);
+                timelineRef.current.on("click", (_properties) => {
                     // if (event && event.what === "group-label") {
                     //     const groupId = event.group;
                     //     if (groupId) {
@@ -97,10 +97,10 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
 
     // LOAD DATA
     const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
-    const items = useMemo(() => new DataSet(), []);
+    const items = useMemo(() => new DataSet<TimelineItem>(), []);
     if (events && items.getIds().length === 0) {
         for (const e of events) {
-            items.add(e);
+            items.add(e as unknown as TimelineItem);
         }
     }
 
