@@ -112,28 +112,8 @@ export const audioEventMetadataQuery = (audioId: string) =>
         queryFn: async () => {
             // Mock data for specific audio events
             const mockData = {
-                a1: {
-                    time: "2024-01-01T10:30:00Z",
-                    duration: 210, // 3.5 minutes
-                    entity_id: "truck-1",
-                    side_a: "Driver",
-                    side_b: "Dispatcher",
-                    name_a: "Mike Johnson",
-                    name_b: "Sarah Wilson",
-                    call_direction: "outgoing",
-                    href: "http://localhost:8080/audio/a1",
-                },
-                a2: {
-                    time: "2024-01-01T14:15:00Z",
-                    duration: 87, // 1.5 minutes
-                    entity_id: "truck-2",
-                    side_a: "Driver",
-                    side_b: "Fleet Manager",
-                    name_a: "Mike Johnson",
-                    name_b: "David Chen",
-                    call_direction: "incoming",
-                    href: "http://localhost:8080/audio/a2",
-                },
+                a1: { time: "2024-01-01T10:30:00Z", duration: 210, entity_id: "truck-1", side_a: "Driver", side_b: "Dispatcher", name_a: "Mike Johnson", name_b: "Sarah Wilson", call_direction: "outgoing", href: "http://localhost:8080/audio/a1" },
+                a2: { time: "2024-01-01T14:15:00Z", duration: 87, entity_id: "truck-2", side_a: "Driver", side_b: "Fleet Manager", name_a: "Mike Johnson", name_b: "David Chen", call_direction: "incoming", href: "http://localhost:8080/audio/a2" },
             };
 
             // Return specific data for a1/a2, or default data for other IDs
@@ -169,18 +149,8 @@ export const eventMetadataQuery = (eventId: string) =>
         queryKey: ["event", eventId],
         queryFn: async () => {
             const mockData: Record<string, { entity_id: string; time: string; event_type: string; href: string }> = {
-                e1: {
-                    entity_id: "truck-1",
-                    time: "2024-01-01T12:00:00Z",
-                    event_type: "speeding",
-                    href: "http://localhost:8080/events/e1",
-                },
-                e2: {
-                    entity_id: "truck-2",
-                    time: "2024-01-01T11:38:27Z",
-                    event_type: "harsh_braking",
-                    href: "http://localhost:8080/events/e2",
-                },
+                e1: { entity_id: "truck-1", time: "2024-01-01T12:00:00Z", event_type: "speeding", href: "http://localhost:8080/events/e1" },
+                e2: { entity_id: "truck-2", time: "2024-01-01T11:38:27Z", event_type: "harsh_braking", href: "http://localhost:8080/events/e2" },
             };
 
             return (
@@ -209,18 +179,8 @@ export const visualEventMetadataQuery = (visualId: string) =>
         queryKey: ["visual", visualId],
         queryFn: async () => {
             const mockData: Record<string, { entity_id: string; time: string; event_type: string; href: string }> = {
-                v1: {
-                    entity_id: "truck-3",
-                    time: "2024-01-01T15:10:00Z",
-                    event_type: "camera_snapshot",
-                    href: "http://localhost:8080/visual/v1",
-                },
-                v2: {
-                    entity_id: "truck-4",
-                    time: "2024-01-01T15:20:00Z",
-                    event_type: "dashcam_clip",
-                    href: "http://localhost:8080/visual/v2",
-                },
+                v1: { entity_id: "truck-3", time: "2024-01-01T15:10:00Z", event_type: "camera_snapshot", href: "http://localhost:8080/visual/v1" },
+                v2: { entity_id: "truck-4", time: "2024-01-01T15:20:00Z", event_type: "dashcam_clip", href: "http://localhost:8080/visual/v2" },
             };
 
             return (
@@ -250,20 +210,8 @@ export const textEventMetadataQuery = (textId: string) =>
         queryKey: ["text", textId],
         queryFn: async () => {
             const mockData: Record<string, { entity_id: string; time: string; event_type: string; text: string; href: string }> = {
-                t1: {
-                    entity_id: "truck-5",
-                    time: "2024-01-01T10:05:00Z",
-                    event_type: "note",
-                    text: "Driver reported traffic congestion on route.",
-                    href: "http://localhost:8080/text/t1",
-                },
-                t2: {
-                    entity_id: "truck-6",
-                    time: "2024-01-01T10:45:00Z",
-                    event_type: "system_message",
-                    text: "Maintenance reminder triggered.",
-                    href: "http://localhost:8080/text/t2",
-                },
+                t1: { entity_id: "truck-5", time: "2024-01-01T10:05:00Z", event_type: "note", text: "Driver reported traffic congestion on route.", href: "http://localhost:8080/text/t1" },
+                t2: { entity_id: "truck-6", time: "2024-01-01T10:45:00Z", event_type: "system_message", text: "Maintenance reminder triggered.", href: "http://localhost:8080/text/t2" },
             };
 
             return (
