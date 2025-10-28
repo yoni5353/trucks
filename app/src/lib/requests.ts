@@ -9,14 +9,14 @@ export const entitiesQuery = (parameters?: PageParameters) =>
     queryOptions({
         queryKey: ["entities", parameters],
         queryFn: async () => {
-            return Array.from({ length: 500 }).map((_, i) => {
-                const location = [34.8 + Math.random() * 0.5, 30.2 + Math.random() * 0.5];
-                return {
-                    type: "truck",
-                    id: `${i + 1}`,
-                    location,
-                };
-            });
+            // 5 trucks with their final/current locations
+            return [
+                { type: "truck", id: "1", location: [34.7818, 32.0853] }, // Tel Aviv area
+                { type: "truck", id: "2", location: [35.2137, 31.7683] }, // Jerusalem area  
+                { type: "truck", id: "3", location: [34.9896, 32.7940] }, // Haifa area
+                { type: "truck", id: "4", location: [34.8516, 31.0461] }, // Beer Sheva area
+                { type: "truck", id: "5", location: [35.4983, 32.9257] }, // Tiberias area
+            ];
         },
     });
 
@@ -41,57 +41,84 @@ export const eventsOfEntityQuery = (
         queryFn: async () => {
             const beforeXMinutes = (minutes: number) =>
                 new Date(Date.now() - minutes * 60 * 1000).toISOString();
-            const events: Array<EntityEvent> = [];
+            
+            // Each truck has a unique route ending at their final location
+            const truckRoutes: { [key: string]: EntityEvent[] } = {
+                "1": [ // Tel Aviv route - coastal journey ending in Tel Aviv
+                    { id: "t1-g1", group: "location", t: "point", coords: [34.8516, 31.0461], start: beforeXMinutes(240) }, // Started in Beer Sheva
+                    { id: "t1-g2", group: "location", t: "point", coords: [34.8200, 31.2500], start: beforeXMinutes(200) },
+                    { id: "t1-g3", group: "location", t: "point", coords: [34.8000, 31.5000], start: beforeXMinutes(160) },
+                    { id: "t1-g4", group: "location", t: "point", coords: [34.7900, 31.7500], start: beforeXMinutes(120) },
+                    { id: "t1-g5", group: "location", t: "point", coords: [34.7850, 31.9500], start: beforeXMinutes(80) },
+                    { id: "t1-g6", group: "location", t: "point", coords: [34.7818, 32.0853], start: beforeXMinutes(40) }, // Final: Tel Aviv
+                    { id: "t1-a1", group: "audio", t: "audio", start: beforeXMinutes(180), end: beforeXMinutes(170) },
+                    { id: "t1-e1", group: "event", t: "event", what: "speeding", start: beforeXMinutes(150) },
+                ],
+                "2": [ // Jerusalem route - mountain climb to Jerusalem
+                    { id: "t2-g1", group: "location", t: "point", coords: [34.7818, 32.0853], start: beforeXMinutes(240) }, // Started in Tel Aviv
+                    { id: "t2-g2", group: "location", t: "point", coords: [34.8500, 31.9500], start: beforeXMinutes(200) },
+                    { id: "t2-g3", group: "location", t: "point", coords: [34.9500, 31.8500], start: beforeXMinutes(160) },
+                    { id: "t2-g4", group: "location", t: "point", coords: [35.0500, 31.8000], start: beforeXMinutes(120) },
+                    { id: "t2-g5", group: "location", t: "point", coords: [35.1500, 31.7800], start: beforeXMinutes(80) },
+                    { id: "t2-g6", group: "location", t: "point", coords: [35.2137, 31.7683], start: beforeXMinutes(40) }, // Final: Jerusalem
+                    { id: "t2-a1", group: "audio", t: "audio", start: beforeXMinutes(130), end: beforeXMinutes(115) },
+                    { id: "t2-e1", group: "event", t: "event", what: "harsh_braking", start: beforeXMinutes(90) },
+                ],
+                "3": [ // Haifa route - northern coastal journey
+                    { id: "t3-g1", group: "location", t: "point", coords: [34.7818, 32.0853], start: beforeXMinutes(240) }, // Started in Tel Aviv
+                    { id: "t3-g2", group: "location", t: "point", coords: [34.8000, 32.2500], start: beforeXMinutes(200) },
+                    { id: "t3-g3", group: "location", t: "point", coords: [34.8500, 32.4000], start: beforeXMinutes(160) },
+                    { id: "t3-g4", group: "location", t: "point", coords: [34.9000, 32.5500], start: beforeXMinutes(120) },
+                    { id: "t3-g5", group: "location", t: "point", coords: [34.9500, 32.7000], start: beforeXMinutes(80) },
+                    { id: "t3-g6", group: "location", t: "point", coords: [34.9896, 32.7940], start: beforeXMinutes(40) }, // Final: Haifa
+                    { id: "t3-a1", group: "audio", t: "audio", start: beforeXMinutes(210), end: beforeXMinutes(195) },
+                    { id: "t3-e1", group: "event", t: "event", what: "speeding", start: beforeXMinutes(100) },
+                ],
+                "4": [ // Beer Sheva route - southern desert journey
+                    { id: "t4-g1", group: "location", t: "point", coords: [35.2137, 31.7683], start: beforeXMinutes(240) }, // Started in Jerusalem
+                    { id: "t4-g2", group: "location", t: "point", coords: [35.1000, 31.6000], start: beforeXMinutes(200) },
+                    { id: "t4-g3", group: "location", t: "point", coords: [35.0000, 31.4500], start: beforeXMinutes(160) },
+                    { id: "t4-g4", group: "location", t: "point", coords: [34.9500, 31.3000], start: beforeXMinutes(120) },
+                    { id: "t4-g5", group: "location", t: "point", coords: [34.9000, 31.1500], start: beforeXMinutes(80) },
+                    { id: "t4-g6", group: "location", t: "point", coords: [34.8516, 31.0461], start: beforeXMinutes(40) }, // Final: Beer Sheva
+                    { id: "t4-a1", group: "audio", t: "audio", start: beforeXMinutes(150), end: beforeXMinutes(140) },
+                    { id: "t4-e1", group: "event", t: "event", what: "harsh_acceleration", start: beforeXMinutes(110) },
+                ],
+                "5": [ // Tiberias route - valley to lake journey
+                    { id: "t5-g1", group: "location", t: "point", coords: [34.9896, 32.7940], start: beforeXMinutes(240) }, // Started in Haifa
+                    { id: "t5-g2", group: "location", t: "point", coords: [35.1000, 32.8000], start: beforeXMinutes(200) },
+                    { id: "t5-g3", group: "location", t: "point", coords: [35.2000, 32.8500], start: beforeXMinutes(160) },
+                    { id: "t5-g4", group: "location", t: "point", coords: [35.3000, 32.8800], start: beforeXMinutes(120) },
+                    { id: "t5-g5", group: "location", t: "point", coords: [35.4000, 32.9000], start: beforeXMinutes(80) },
+                    { id: "t5-g6", group: "location", t: "point", coords: [35.4983, 32.9257], start: beforeXMinutes(40) }, // Final: Tiberias
+                    { id: "t5-a1", group: "audio", t: "audio", start: beforeXMinutes(190), end: beforeXMinutes(175) },
+                    { id: "t5-e1", group: "event", t: "event", what: "geofence_exit", start: beforeXMinutes(130) },
+                ],
+            };
 
-            // prettier-ignore
-            return events.concat(
-                [
-                    { id: "g1", group: "location", t: "point", coords: [34.7818, 31.0853], start: beforeXMinutes(250), },
-                    { id: "g2", group: "location", t: "point", coords: [34.7518, 31.143], start: beforeXMinutes(170), },
-                    { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(160), },
-                    { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(110) },
-                    { id: "g5", group: "location", t: "point", coords: [34.8, 31.28], start: beforeXMinutes(60) },
-                    { id: "gg1", group: "location", t: "loc", wkt: "POLYGON((34.7777 32.0846, 34.77929 32.0846, 34.77929 32.08595, 34.7777 32.08595, 34.7777 32.0846))", start: beforeXMinutes(50) },
-                    { id: "gg2", group: "location", t: "loc", wkt: "POLYGON((34.77949 32.0846, 34.78108 32.0846, 34.78108 32.08595, 34.77949 32.08595, 34.77949 32.0846))", start: beforeXMinutes(45) },
-                    { id: "gg3", group: "location", t: "loc", wkt: "POLYGON((34.78128 32.0846, 34.78287 32.0846, 34.78287 32.08595, 34.78128 32.08595, 34.78128 32.0846))", start: beforeXMinutes(40) },
-                    { id: "gg4", group: "location", t: "loc", wkt: "POLYGON((34.78307 32.0846, 34.78466 32.0846, 34.78466 32.08595, 34.78307 32.08595, 34.78307 32.0846))", start: beforeXMinutes(35) },
-                    { id: "gg5", group: "location", t: "loc", wkt: "POLYGON((34.78486 32.0846, 34.78645 32.0846, 34.78645 32.08595, 34.78486 32.08595, 34.78486 32.0846))", start: beforeXMinutes(30) },
-                    { id: "gg6", group: "location", t: "loc", wkt: "POLYGON((34.78665 32.0846, 34.78824 32.0846, 34.78824 32.08595, 34.78665 32.08595, 34.78665 32.0846))", start: beforeXMinutes(25) },
-                    { id: "gg7", group: "location", t: "loc", wkt: "POLYGON((34.78844 32.0846, 34.79003 32.0846, 34.79003 32.08595, 34.78844 32.08595, 34.78844 32.0846))", start: beforeXMinutes(20) },
-                    { id: "gg8", group: "location", t: "loc", wkt: "POLYGON((34.79023 32.0846, 34.79182 32.0846, 34.79182 32.08595, 34.79023 32.08595, 34.79023 32.0846))", start: beforeXMinutes(15) }
-                ],
-                [
-                    { id: "a1", group: "audio", t: "audio", start: beforeXMinutes(210), end: beforeXMinutes(175), },
-                    { id: "a2", group: "audio", t: "audio", start: beforeXMinutes(100), end: beforeXMinutes(87), },
-                ],
-                [
-                    { id: "e1", group: "event", t: "event", what: "speeding", start: beforeXMinutes(210), end: beforeXMinutes(175), },
-                    { id: "e2", group: "event", t: "event", what: "harsh_braking", start: beforeXMinutes(100), end: beforeXMinutes(87), },
-                ],
-            );
+            // Return the route for the requested truck, or empty if not found
+            return truckRoutes[entityId] || [];
         },
     });
 
 export const eventsQuery = queryOptions({
     queryKey: ["events"],
     queryFn: async () => {
-        // prettier-ignore
+        const now = new Date();
+        const beforeXHours = (hours: number) => new Date(now.getTime() - hours * 60 * 60 * 1000).toISOString();
+        
+        // Events for the 5 trucks matching their journeys
         return [
-            { id: "event-1", entityIds: ["truck-1"], type: "speeding", timestamp: "2024-01-01T00:00:00Z", },
-            { id: "event-2", entityIds: ["truck-2"], type: "harsh_braking", timestamp: "2024-01-01T11:00:00Z", },
-            { id: "event-3", entityIds: ["truck-1"], type: "geofence_exit", timestamp: "2024-01-01T12:00:00Z", },
-            { id: "event-4", entityIds: ["truck-3"], type: "speeding", timestamp: "2024-01-01T19:00:00Z", },
-            { id: "event-5", entityIds: ["truck-2"], type: "harsh_acceleration", timestamp: "2024-01-01T14:00:00Z", timestampEnd: "2024-01-01T14:20:00Z", },
-            { id: "event-6", entityIds: ["truck-4"], type: "speeding", timestamp: "2024-01-01T16:00:00Z", },
-            { id: "event-7", entityIds: ["truck-5"], type: "harsh_braking", timestamp: "2024-01-01T17:00:00Z", },
-            { id: "event-8", entityIds: ["truck-6"], type: "geofence_exit", timestamp: "2024-01-01T18:00:00Z", },
-            { id: "event-9", entityIds: ["truck-4"], type: "speeding", timestamp: "2024-01-01T20:00:00Z", },
-            { id: "event-10", entityIds: ["truck-5"], type: "harsh_acceleration", timestamp: "2024-01-01T21:00:00Z", timestampEnd: "2024-01-01T21:20:00Z", },
-            { id: "event-12", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T23:00:00Z", },
-            { id: "event-13", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T12:00:00Z", },
-            { id: "event-14", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T11:30:00Z", },
-            { id: "event-15", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T12:15:00Z", },
-            { id: "event-16", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T13:00:00Z", },
+            { id: "event-1", entityIds: ["truck-1"], type: "speeding", timestamp: beforeXHours(2.5) },
+            { id: "event-2", entityIds: ["truck-2"], type: "harsh_braking", timestamp: beforeXHours(1.5) },
+            { id: "event-3", entityIds: ["truck-3"], type: "speeding", timestamp: beforeXHours(1.7) },
+            { id: "event-4", entityIds: ["truck-4"], type: "harsh_acceleration", timestamp: beforeXHours(1.8) },
+            { id: "event-5", entityIds: ["truck-5"], type: "geofence_exit", timestamp: beforeXHours(2.2) },
+            { id: "event-6", entityIds: ["truck-1"], type: "audio_alert", timestamp: beforeXHours(3.0) },
+            { id: "event-7", entityIds: ["truck-2"], type: "audio_alert", timestamp: beforeXHours(2.2), timestampEnd: beforeXHours(1.9) },
+            { id: "event-8", entityIds: ["truck-3"], type: "audio_alert", timestamp: beforeXHours(3.5), timestampEnd: beforeXHours(3.25) },
+            { id: "event-9", entityIds: ["truck-4"], type: "audio_alert", timestamp: beforeXHours(2.5), timestampEnd: beforeXHours(2.33) },
+            { id: "event-10", entityIds: ["truck-5"], type: "audio_alert", timestamp: beforeXHours(3.2), timestampEnd: beforeXHours(2.9) },
         ];
     },
 });
