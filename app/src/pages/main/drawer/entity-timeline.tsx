@@ -9,6 +9,7 @@ import { Volume2, Bot, LayoutList } from "lucide-static";
 const BASE_URL = import.meta.env.BASE_URL || "/";
 const LOCATION_ICON_URL = `${BASE_URL}location.svg`;
 const PHOTO_ICON_URL = `${BASE_URL}photo.svg`;
+const AUDIO_ICON_URL = `${BASE_URL}audio.svg`;
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
@@ -24,8 +25,8 @@ const EVENT_GROUPS = [
     },
     {
         id: "audio",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Volume2}</div>`,
-        clusterIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg>`,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="${AUDIO_ICON_URL}" alt="Audio" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="${AUDIO_ICON_URL}" alt="Audio" width="16" height="16" />`,
     },
     {
         id: "visual",
@@ -165,7 +166,7 @@ function eventTemplate(
             const minutes = duration.minutes || 0;
             const seconds = duration.seconds || 0;
             const durationText = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-            return `<div style="display: flex; align-items: center; gap: 6px; padding: 2px 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg><span style="font-size: 12px; white-space: nowrap;">${durationText}</span></div>`;
+            return `<div style="display: flex; align-items: center; gap: 6px; padding: 2px 6px;"><img src="${AUDIO_ICON_URL}" alt="Audio" width="16" height="16" /><span style="font-size: 12px; white-space: nowrap;">${durationText}</span></div>`;
         }
         default:
             return "";
