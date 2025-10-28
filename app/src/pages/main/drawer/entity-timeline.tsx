@@ -5,7 +5,7 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
 import { Timeline, type TimelineGroup } from "vis-timeline";
-import { MapPinned, Volume2, Image, Bot, LayoutList } from "lucide-static";
+import { Volume2, Bot, LayoutList } from "lucide-static";
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
@@ -16,8 +16,8 @@ import { LoaderIcon } from "lucide-react";
 const EVENT_GROUPS = [
     {
         id: "location",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${MapPinned}</div>`,
-        clusterIcon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>`,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="/location.svg" alt="Location" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="/location.svg" alt="Location" width="16" height="16" />`,
     },
     {
         id: "audio",
@@ -26,8 +26,8 @@ const EVENT_GROUPS = [
     },
     {
         id: "visual",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Image}</div>`,
-        // clusterIcon: Image,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="/photo.svg" alt="Photo" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="/photo.svg" alt="Photo" width="16" height="16" />`,
     },
     {
         id: "text",
@@ -151,7 +151,7 @@ function eventTemplate(
     switch (item.t) {
         case "point":
         case "loc":
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>';
+            return '<img src="/location.svg" alt="Location" width="16" height="16" />';
         case "event":
             return `<span class="m-auto" title="${item.what}">${item.what}</span>`;
         case "audio": {
