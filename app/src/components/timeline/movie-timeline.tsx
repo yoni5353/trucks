@@ -79,25 +79,24 @@ export function MovieTimeline<T extends TimelineItem>({
 
             let isDragging = false;
             const setMarker = (time: Date) => {
-                timeline.setCustomTime(time, "marker");
+                // Only update the time, no visual marker
                 onMarkerStartChange?.(time);
             };
             timeline.on("mouseDown", function (properties) {
                 const eventProps = timeline.getEventProperties(properties.event);
-                if (
-                    (eventProps.what !== "axis" && eventProps.what !== "custom-time") ||
-                    properties.event.shiftKey ||
-                    properties.event.ctrlKey
-                ) {
+                // Skip if using modifier keys (for selection)
+                if (properties.event.shiftKey || properties.event.ctrlKey) {
                     return;
                 }
-                isDragging = true;
+                
+                // Allow clicking on axis, background, and items to set the time
+                if (eventProps.what === "axis" || 
+                    eventProps.what === "background" ||
+                    eventProps.what === "item") {
+                    isDragging = true;
 
-                timeline.setOptions({ moveable: false, cluster });
-                try {
+                    timeline.setOptions({ moveable: false, cluster });
                     setMarker(eventProps.time);
-                } catch {
-                    timeline.addCustomTime(eventProps.time, "marker");
                 }
             });
             timeline.on("mouseUp", function () {
@@ -113,10 +112,6 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("doubleClick", function (properties) {
                 const w = timeline.getWindow();
                 timeline.setWindow(w.start, w.end);
-                const eventProps = timeline.getEventProperties(properties.event);
-                if (eventProps.what === "custom-time") {
-                    timeline.removeCustomTime(eventProps.customTime);
-                }
             });
         }
 
@@ -134,5 +129,5 @@ export function MovieTimeline<T extends TimelineItem>({
         });
     }, [onSelect, timeline, timelineRef]);
 
-    return <div dir="rtl" ref={containerRef} className="h-full w-full" />;
+    return <div dir="rtl" ref={containerRef} className="h-full w-[1200px] self-start" />;
 }
