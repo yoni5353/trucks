@@ -75,14 +75,11 @@ export function MovieTimeline<T extends TimelineItem>({
                 timeline.setWindow(w.start, w.end);
             }
 
-            // Ensure initial render after layout sizing
-            try {
-                timeline.redraw();
-            } catch {}
-
             // Add events for time marker
 
             let isDragging = false;
+            let rafId: number | null = null;
+            let pendingTime: Date | null = null;
             const setMarker = (time: Date) => {
                 timeline.setCustomTime(time, "marker");
                 onMarkerStartChange?.(time);
@@ -108,11 +105,20 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("mouseUp", function () {
                 isDragging = false;
                 timeline.setOptions({ moveable: true, cluster });
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = null;
+                pendingTime = null;
             });
             timeline.on("mouseMove", function (properties) {
                 if (isDragging) {
                     const eventProps = timeline.getEventProperties(properties.event);
-                    setMarker(eventProps.time);
+                    pendingTime = eventProps.time;
+                    if (rafId == null) {
+                        rafId = requestAnimationFrame(() => {
+                            if (pendingTime) setMarker(pendingTime);
+                            rafId = null;
+                        });
+                    }
                 }
             });
             timeline.on("doubleClick", function (properties) {
@@ -139,5 +145,5 @@ export function MovieTimeline<T extends TimelineItem>({
         });
     }, [onSelect, timeline, timelineRef]);
 
-    return <div dir="rtl" ref={containerRef} className="h-[296px] w-full" />;
+    return <div dir="rtl" ref={containerRef} className="h-full w-full" />;
 }
