@@ -5,11 +5,12 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
 import { Timeline, type TimelineGroup } from "vis-timeline";
-import { Volume2, Bot, LayoutList } from "lucide-static";
+import { Volume2, LayoutList } from "lucide-static";
 const BASE_URL = import.meta.env.BASE_URL || "/";
 const LOCATION_ICON_URL = `${BASE_URL}location.svg`;
 const PHOTO_ICON_URL = `${BASE_URL}photo.svg`;
 const AUDIO_ICON_URL = `${BASE_URL}audio.svg`;
+const DEVICE_ICON_URL = `${BASE_URL}device.svg`;
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
@@ -40,8 +41,8 @@ const EVENT_GROUPS = [
     },
     {
         id: "event",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${Bot}</div>`,
-        // clusterIcon: Bot,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="${DEVICE_ICON_URL}" alt="Device" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="${DEVICE_ICON_URL}" alt="Device" width="16" height="16" />`,
     },
 ] satisfies { id: EventGroup; content: string; clusterIcon?: string }[];
 
