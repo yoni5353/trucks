@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ComponentRef } from "react";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PageSidebar } from "./sidebar/page-sidebar";
+import { useEffect, useRef, useState, type ComponentRef } from "react";
 import {
     addEntities,
     clearAllHistory,
@@ -26,11 +27,10 @@ const DRAWER_DEFAULT_HEIGHT = 40;
 export default function Page() {
     const queryClient = useQueryClient();
     const drawerRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
-    const rightPaneRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
+    const paneRef = useRef<ComponentRef<typeof ResizablePanel>>(null);
     const [isDrawerTranstioning, setIsDrawerTransitioning] = useState(false);
 
-    const [{ map, select, entities, histories, entitiesCluster, store, draw }] =
-        useState(initMap);
+    const [{ map, select, entities, histories, entitiesCluster, store, draw }] = useState(initMap);
 
     const parameters = useStore(parametersStore);
     const { data: entitiesData } = useQuery(entitiesQuery(parameters));
@@ -63,10 +63,7 @@ export default function Page() {
                 return;
             } else {
                 let history: GeographicEvent[] | undefined = undefined;
-                const [type, entityId] = focusedFeatureId?.split("-", 2) as [
-                    string,
-                    string,
-                ];
+                const [type, entityId] = focusedFeatureId?.split("-", 2) as [string, string];
                 const updateHistory = throttle(async (time: Date) => {
                     history ??= await getHistoryOfEntity(
                         queryClient,
@@ -75,11 +72,7 @@ export default function Page() {
                         parameters.timeRange,
                     );
                     if (history) {
-                        registerHistoryOfEntities(
-                            histories,
-                            { [focusedFeatureId]: history },
-                            time,
-                        );
+                        registerHistoryOfEntities(histories, { [focusedFeatureId]: history }, time);
                     } else {
                         clearAllHistory(histories);
                     }
@@ -93,7 +86,7 @@ export default function Page() {
                 });
             }
         },
-        [focusedFeatureId, histories, queryClient, parameters.timeRange],
+        [focusedFeatureId, histories, queryClient],
     );
 
     useEffect(
@@ -115,77 +108,86 @@ export default function Page() {
     );
 
     return (
-        <div className="flex h-screen w-screen flex-col bg-background">
-            <ResizablePanelGroup direction="horizontal">
-                <ResizablePanel
-                    collapsible
-                    defaultSize={20}
-                    minSize={15}
-                    maxSize={30}
-                >
-                    <PageSidebar
-                        map={map}
-                        draw={draw}
-                        entities={entities}
-                        entitiesCluster={entitiesCluster}
-                    />
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel>
+        <>
+            <SidebarProvider className="flex h-screen w-screen flex-col">
+                <SidebarInset>
                     <ResizablePanelGroup direction="vertical">
                         <ResizablePanel className="relative" order={1}>
-                            <div className="relative h-full w-full">
-                                <OLMap
-                                    map={map}
-                                    select={select}
-                                    onViewEntity={(
-                                        entityId: string | undefined,
-                                    ) => {
-                                        setFocusedFeatureId(entityId);
-                                        if (entityId)
-                                            drawerRef?.current?.expand(
-                                                DRAWER_DEFAULT_HEIGHT,
-                                            );
-                                        if (entityId)
-                                            rightPaneRef?.current?.expand(50);
-                                    }}
-                                    onClickSingleEntity={(entityId: string) => {
-                                        if (rightPaneRef.current?.isExpanded()) {
-                                            setFocusedFeatureId(entityId);
-                                            if (entityId)
-                                                drawerRef?.current?.expand(
-                                                    DRAWER_DEFAULT_HEIGHT,
-                                                );
-                                        }
+                            <ResizablePanelGroup direction="horizontal">
+                                <ResizablePanel>
+                                    <div className="relative h-screen w-screen">
+                                        <OLMap
+                                            map={map}
+                                            select={select}
+                                            onViewEntity={(entityId: string | undefined) => {
+                                                setFocusedFeatureId(entityId);
+                                                if (entityId)
+                                                    drawerRef?.current?.expand(
+                                                        DRAWER_DEFAULT_HEIGHT,
+                                                    );
+                                                if (entityId) paneRef?.current?.expand(50);
+                                            }}
+                                            onClickSingleEntity={(entityId: string) => {
+                                                // if (paneRef.current?.isExpanded()) {
+                                                if (true) {
+                                                    setFocusedFeatureId(entityId);
+                                                    if (entityId)
+                                                        drawerRef?.current?.expand(
+                                                            DRAWER_DEFAULT_HEIGHT,
+                                                        );
+                                                    // if (entityId) paneRef?.current?.expand(50);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </ResizablePanel>
+                                <ResizableHandle
+                                    className="hover:after:bg-sidebar-border"
+                                    onClick={() => {
+                                        return paneRef.current?.isCollapsed()
+                                            ? paneRef.current?.expand()
+                                            : paneRef.current?.collapse();
                                     }}
                                 />
-                            </div>
+                                <ResizablePanel
+                                    className={cn(
+                                        isDrawerTranstioning && "transition-all duration-100",
+                                    )}
+                                    onTransitionEnd={() => setIsDrawerTransitioning(false)}
+                                    collapsible
+                                    minSize={1}
+                                    defaultSize={1}
+                                    maxSize={70}
+                                    collapsedSize={1}
+                                    ref={paneRef}
+                                >
+                                    <Pane
+                                        focusedFeatureId={focusedFeatureId}
+                                        map={map}
+                                        entities={entities}
+                                        onDismiss={() => paneRef.current?.collapse()}
+                                    />
+                                </ResizablePanel>
+                            </ResizablePanelGroup>
                         </ResizablePanel>
                         <ResizableHandle
-                            withHandle
+                            className="hover:after:bg-sidebar-border"
                             onClick={() => {
                                 setIsDrawerTransitioning(true);
                                 return drawerRef.current?.isCollapsed()
-                                    ? drawerRef.current?.expand(
-                                          DRAWER_DEFAULT_HEIGHT,
-                                      )
+                                    ? drawerRef.current?.expand(DRAWER_DEFAULT_HEIGHT)
                                     : drawerRef.current?.collapse();
                             }}
                         />
                         <ResizablePanel
-                            className={cn(
-                                isDrawerTranstioning &&
-                                    "transition-all duration-100",
-                            )}
-                            onTransitionEnd={() =>
-                                setIsDrawerTransitioning(false)
-                            }
+                            className={cn(isDrawerTranstioning && "transition-all duration-100")}
+                            onTransitionEnd={() => setIsDrawerTransitioning(false)}
                             ref={drawerRef}
                             order={2}
                             collapsible
-                            minSize={5}
-                            collapsedSize={5}
-                            defaultSize={5}
+                            minSize={1}
+                            collapsedSize={1}
+                            defaultSize={1} // defaultSize={40} when MasterTimeline is functional
                             maxSize={60}
                         >
                             <PageDrawer
@@ -198,27 +200,14 @@ export default function Page() {
                             />
                         </ResizablePanel>
                     </ResizablePanelGroup>
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel
-                    className={cn(
-                        isDrawerTranstioning && "transition-all duration-100",
-                    )}
-                    onTransitionEnd={() => setIsDrawerTransitioning(false)}
-                    collapsible
-                    defaultSize={20}
-                    minSize={15}
-                    maxSize={40}
-                    ref={rightPaneRef}
-                >
-                    <Pane
-                        focusedFeatureId={focusedFeatureId}
-                        map={map}
-                        entities={entities}
-                        onDismiss={() => rightPaneRef.current?.collapse()}
-                    />
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </div>
+                </SidebarInset>
+                <PageSidebar
+                    map={map}
+                    draw={draw}
+                    entities={entities}
+                    entitiesCluster={entitiesCluster}
+                />
+            </SidebarProvider>
+        </>
     );
 }
