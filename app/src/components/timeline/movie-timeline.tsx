@@ -10,6 +10,7 @@ export function MovieTimeline<T extends TimelineItem>({
     items,
     groups,
     onSelect,
+    onSelectAt,
     timelineOptions,
     clusterTemplate,
     markerStart,
@@ -19,6 +20,7 @@ export function MovieTimeline<T extends TimelineItem>({
     items: DataSet<T>;
     groups?: DataSet<object>;
     onSelect?: (itemIds: string[]) => void;
+    onSelectAt?: (payload: { itemIds: string[]; pageX: number; pageY: number }) => void;
     timelineOptions?: TimelineOptions;
     clusterTemplate?: (props: { items: TimelineItem[]; group: { groupId: string } }) => [string];
     markerStart?: Date;
@@ -65,7 +67,7 @@ export function MovieTimeline<T extends TimelineItem>({
                 // rest
                 ...timelineOptions,
             } satisfies TimelineOptions;
-            timelineRef.current = new Timeline(containerRef.current, items, groups, options);
+            timelineRef.current = new Timeline(containerRef.current, items as any, groups as any, options as any);
             const timeline = timelineRef.current;
 
             // Fix for items not showing up initially when clustering is enabled (they show up only after zoom change)
@@ -112,8 +114,8 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("doubleClick", function (properties) {
                 const w = timeline.getWindow();
                 timeline.setWindow(w.start, w.end);
-                const eventProps = timeline.getEventProperties(properties.event);
-                if (eventProps.what === "custom-time") {
+                const eventProps = timeline.getEventProperties(properties.event) as any;
+                if (eventProps.what === "custom-time" && eventProps.customTime) {
                     timeline.removeCustomTime(eventProps.customTime);
                 }
             });
@@ -130,6 +132,13 @@ export function MovieTimeline<T extends TimelineItem>({
         timeline?.on("select", (properties) => {
             const eventProps = timeline.getEventProperties(properties.event);
             onSelect?.(properties.items);
+            if (
+                eventProps &&
+                typeof (eventProps as any).pageX === "number" &&
+                typeof (eventProps as any).pageY === "number"
+            ) {
+                onSelectAt?.({ itemIds: properties.items, pageX: (eventProps as any).pageX, pageY: (eventProps as any).pageY });
+            }
         });
     }, [onSelect, timeline, timelineRef]);
 

@@ -24,6 +24,12 @@ export type EntityEvent = Omit<TimelineItem, "content"> & {
               what: string;
           }
         | {
+              t: "visual";
+          }
+        | {
+              t: "text";
+          }
+        | {
               t?: undefined;
           }
     );
