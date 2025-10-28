@@ -134,5 +134,5 @@ export function MovieTimeline<T extends TimelineItem>({
         });
     }, [onSelect, timeline, timelineRef]);
 
-    return <div dir="rtl" ref={containerRef} className="h-full w-[1000px]" />;
+    return <div dir="rtl" ref={containerRef} className="h-full w-full" />;
 }
