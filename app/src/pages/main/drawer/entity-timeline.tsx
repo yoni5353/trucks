@@ -5,20 +5,18 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
 import { Timeline, type TimelineGroup } from "vis-timeline";
-// no icon imports needed; all timeline icons use project SVGs
+import { Volume2, LayoutList } from "lucide-static";
 const BASE_URL = import.meta.env.BASE_URL || "/";
 const LOCATION_ICON_URL = `${BASE_URL}location.svg`;
 const PHOTO_ICON_URL = `${BASE_URL}photo.svg`;
 const AUDIO_ICON_URL = `${BASE_URL}audio.svg`;
 const DEVICE_ICON_URL = `${BASE_URL}device.svg`;
-const MESSAGE_ICON_URL = `${BASE_URL}message.svg`;
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
 import type { EntityEvent, EventGroup } from "@/lib/types";
 import { focusedTimeStore } from "../focus";
 import { LoaderIcon } from "lucide-react";
-import { type TimelineItem } from "vis-timeline";
 
 const EVENT_GROUPS = [
     {
@@ -38,8 +36,8 @@ const EVENT_GROUPS = [
     },
     {
         id: "text",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="${MESSAGE_ICON_URL}" alt="Message" width="24" height="24" /></div>`,
-        clusterIcon: `<img src="${MESSAGE_ICON_URL}" alt="Message" width="16" height="16" />`,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;">${LayoutList}</div>`,
+        // clusterIcon: LayoutList,
     },
     {
         id: "event",
@@ -61,7 +59,8 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     useEffect(
         function focusEventOnClick() {
             if (timelineRef.current) {
-                timelineRef.current.on("click", (_properties) => {
+                timelineRef.current.on("click", (properties) => {
+                    const event = timelineRef.current?.getEventProperties(properties.event);
                     // if (event && event.what === "group-label") {
                     //     const groupId = event.group;
                     //     if (groupId) {
@@ -97,10 +96,10 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
 
     // LOAD DATA
     const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
-    const items = useMemo(() => new DataSet<TimelineItem>(), []);
+    const items = useMemo(() => new DataSet(), []);
     if (events && items.getIds().length === 0) {
         for (const e of events) {
-            items.add(e as unknown as TimelineItem);
+            items.add(e);
         }
     }
 
