@@ -79,7 +79,7 @@ export function MovieTimeline<T extends TimelineItem>({
 
             let isDragging = false;
             const setMarker = (time: Date) => {
-                // Only update the time, no visual marker
+                timeline.setCustomTime(time, "marker");
                 onMarkerStartChange?.(time);
             };
             timeline.on("mouseDown", function (properties) {
@@ -89,14 +89,19 @@ export function MovieTimeline<T extends TimelineItem>({
                     return;
                 }
                 
-                // Allow clicking on axis, background, and items to set the time
+                // Allow clicking on axis, custom-time, background, and items to move the marker
                 if (eventProps.what === "axis" || 
+                    eventProps.what === "custom-time" || 
                     eventProps.what === "background" ||
                     eventProps.what === "item") {
                     isDragging = true;
 
                     timeline.setOptions({ moveable: false, cluster });
-                    setMarker(eventProps.time);
+                    try {
+                        setMarker(eventProps.time);
+                    } catch {
+                        timeline.addCustomTime(eventProps.time, "marker");
+                    }
                 }
             });
             timeline.on("mouseUp", function () {
@@ -112,6 +117,10 @@ export function MovieTimeline<T extends TimelineItem>({
             timeline.on("doubleClick", function (properties) {
                 const w = timeline.getWindow();
                 timeline.setWindow(w.start, w.end);
+                const eventProps = timeline.getEventProperties(properties.event);
+                if (eventProps.what === "custom-time") {
+                    timeline.removeCustomTime(eventProps.customTime);
+                }
             });
         }
 

@@ -137,7 +137,7 @@
 }
 
 .vis-current-time {
-    background-color: hsl(95 25% 45% / 0.4);
+    display: none;
 }
 
 /* Background */
