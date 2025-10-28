@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Crosshair, Info, MapPin, TrendingUp } from "lucide-react";
+import { Crosshair, MapPin } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { truckDetailsQuery } from "@/lib/requests";
 
 export function EntityDetails({
     focusedEntityId,
@@ -8,16 +10,31 @@ export function EntityDetails({
     focusedEntityId: string;
     onFocus?: () => void;
 }) {
-    const location = {
-        name: "Sample Location",
-        description: "This is a sample description for the location.",
-        value: 123456,
-        coordinates: [37.7749, -122.4194], // Example coordinates (latitude, longitude)
-    };
+    const { data: details } = useQuery(truckDetailsQuery('1')); //focusedEntityId
 
     // if (selectedFeatures.length === 0) {
     //     return <p className="text-center text-sm text-muted-foreground">בחר ישות</p>;
     // }
+
+    if (!details) {
+        return (
+            <div className="space-y-4">
+                <div className="mb-6 flex items-start gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-primary/20">
+                        <MapPin className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-muted-foreground">מראה פרטים על:</p>
+                        {focusedEntityId}
+                        <Button variant="ghost" onClick={onFocus} className="ml-auto">
+                            <Crosshair />
+                        </Button>
+                    </div>
+                </div>
+                <div className="rounded-lg bg-secondary/30 p-4 text-sm text-muted-foreground">אין נתונים לישות זו.</div>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -33,37 +50,45 @@ export function EntityDetails({
                     </Button>
                 </div>
             </div>
-            <div className="mb-6 grid grid-cols-2 gap-4">
-                <div className="rounded-lg bg-secondary/50 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-muted-foreground">מספר גדול</span>
+
+            <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {/* IDs and identifiers box */}
+                    <div className="rounded-lg bg-secondary/50 p-4">
+                        <div className="mb-2 text-sm font-medium text-muted-foreground">מזהים</div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">entity_id</span><span className="font-mono" dir="ltr">{details.entity_id}</span></div>
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">op_id</span><span className="font-mono" dir="ltr">{details.op_id}</span></div>
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">number</span><span className="font-mono" dir="ltr">{details.number}</span></div>
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">id_ei</span><span className="font-mono" dir="ltr">{details.id_ei}</span></div>
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">id_si</span><span className="font-mono" dir="ltr">{details.id_si}</span></div>
+                            <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">mac</span><span className="font-mono" dir="ltr">{details.mac}</span></div>
+                        </div>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{location.value}</p>
+
+                    {/* Right column: times + final description stacked */}
+                    <div className="flex flex-col gap-4">
+                        {/* is_drive box */}
+                        <div className="rounded-lg bg-secondary/50 p-4">
+                            <div className="mb-2 text-sm font-medium text-muted-foreground">is_drive</div>
+                            <div className="text-sm font-mono text-foreground" dir="ltr">{details.is_drive}</div>
+                        </div>
+
+                        {/* Final description box */}
+                        <div className="rounded-lg bg-secondary/50 p-4">
+                            <div className="mb-2 text-sm font-medium text-muted-foreground">final_decription</div>
+                            <div className="text-sm text-foreground">{details.final_decription}</div>
+                        </div>
+                    </div>
                 </div>
 
+                {/* Times box moved to standalone position (replaces previous is_drive) */}
                 <div className="rounded-lg bg-secondary/50 p-4">
-                    <div className="mb-2 flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-muted-foreground">מיקום</span>
+                    <div className="mb-2 text-sm font-medium text-muted-foreground">זמני נראות</div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">first_seen</span><span className="font-mono" dir="ltr">{details.first_seen}</span></div>
+                        <div className="flex items-center justify-between gap-2"><span className="text-muted-foreground">last_seen</span><span className="font-mono" dir="ltr">{details.last_seen}</span></div>
                     </div>
-                    <p className="text-right font-mono text-sm text-foreground" dir="ltr">
-                        {location.coordinates[1].toFixed(4)}, {location.coordinates[0].toFixed(4)}
-                    </p>
-                </div>
-            </div>
-            <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">פירוט</h3>
-                <div className="rounded-lg bg-secondary/30 p-4">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                        העיר י׳ שוכנת במרומי הרי הי׳. ככה הייתי רוצָה לפתוח את הסיפור שלי; בריחוק
-                        מיושב, בנשימה עמוקה, בצילום פנורמי שמתמקד לאט מאוד ברחוב אחד, ולאט מאוד בבית
-                        אחד, ״זה הבית שבו נולדתי״. אבל צחוק תעשי מעצמך כשי׳ שלך היא ירושלים, וכל
-                        אידיוט הרי יודע על ירושלים. ועל ירושלים אי אפשר לדבר כבר בכלל. כלומר אי אפשר
-                        בלי ״סמטה מתפתלת״ ו״מבואות של אבן״, ״שיחי צלף״ ו״ערבייה בשוק״. ולי אין מילה
-                        לומר על שיחי צלף ומבואות של אבן ואין לי שמץ רצון לתבל בעגה עסיסית של ימאים
-                        ירושלמים. אלה העסיסיים שיושבים בנמל באגריפס ומגלגלים מעשיות ושפם.
-                    </p>
                 </div>
             </div>
         </>
