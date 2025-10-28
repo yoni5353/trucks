@@ -6,6 +6,9 @@ import { MovieTimeline } from "../../../components/timeline/movie-timeline";
 import { useEffect, useMemo, useRef } from "react";
 import { Timeline, type TimelineGroup } from "vis-timeline";
 import { Volume2, Bot, LayoutList } from "lucide-static";
+const BASE_URL = import.meta.env.BASE_URL || "/";
+const LOCATION_ICON_URL = `${BASE_URL}location.svg`;
+const PHOTO_ICON_URL = `${BASE_URL}photo.svg`;
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
@@ -16,8 +19,8 @@ import { LoaderIcon } from "lucide-react";
 const EVENT_GROUPS = [
     {
         id: "location",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="/location.svg" alt="Location" width="24" height="24" /></div>`,
-        clusterIcon: `<img src="/location.svg" alt="Location" width="16" height="16" />`,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="${LOCATION_ICON_URL}" alt="Location" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="${LOCATION_ICON_URL}" alt="Location" width="16" height="16" />`,
     },
     {
         id: "audio",
@@ -26,8 +29,8 @@ const EVENT_GROUPS = [
     },
     {
         id: "visual",
-        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="/photo.svg" alt="Photo" width="24" height="24" /></div>`,
-        clusterIcon: `<img src="/photo.svg" alt="Photo" width="16" height="16" />`,
+        content: `<div style="height: 36px; padding-top: 6px; padding-inline: 4px;"><img src="${PHOTO_ICON_URL}" alt="Photo" width="24" height="24" /></div>`,
+        clusterIcon: `<img src="${PHOTO_ICON_URL}" alt="Photo" width="16" height="16" />`,
     },
     {
         id: "text",
@@ -151,7 +154,7 @@ function eventTemplate(
     switch (item.t) {
         case "point":
         case "loc":
-            return '<img src="/location.svg" alt="Location" width="16" height="16" />';
+            return `<img src="${LOCATION_ICON_URL}" alt="Location" width="16" height="16" />`;
         case "event":
             return `<span class="m-auto" title="${item.what}">${item.what}</span>`;
         case "audio": {
