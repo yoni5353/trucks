@@ -75,6 +75,11 @@ export function MovieTimeline<T extends TimelineItem>({
                 timeline.setWindow(w.start, w.end);
             }
 
+            // Ensure initial render after layout sizing
+            try {
+                timeline.redraw();
+            } catch {}
+
             // Add events for time marker
 
             let isDragging = false;
@@ -134,5 +139,5 @@ export function MovieTimeline<T extends TimelineItem>({
         });
     }, [onSelect, timeline, timelineRef]);
 
-    return <div dir="rtl" ref={containerRef} className="h-full w-full" />;
+    return <div dir="rtl" ref={containerRef} className="h-[296px] w-full" />;
 }
