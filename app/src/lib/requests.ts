@@ -96,6 +96,192 @@ export const eventsQuery = queryOptions({
     },
 });
 
+export const audioEventMetadataQuery = (audioId: string) =>
+    queryOptions<{
+        time: string;
+        duration: number;
+        entity_id: string;
+        side_a: string;
+        side_b: string;
+        name_a: string;
+        name_b: string;
+        call_direction: string;
+        href: string;
+    }>({
+        queryKey: ["audio", audioId],
+        queryFn: async () => {
+            // Mock data for specific audio events
+            const mockData = {
+                a1: {
+                    time: "2024-01-01T10:30:00Z",
+                    duration: 210, // 3.5 minutes
+                    entity_id: "truck-1",
+                    side_a: "Driver",
+                    side_b: "Dispatcher",
+                    name_a: "Mike Johnson",
+                    name_b: "Sarah Wilson",
+                    call_direction: "outgoing",
+                    href: "http://localhost:8080/audio/a1",
+                },
+                a2: {
+                    time: "2024-01-01T14:15:00Z",
+                    duration: 87, // 1.5 minutes
+                    entity_id: "truck-2",
+                    side_a: "Driver",
+                    side_b: "Fleet Manager",
+                    name_a: "Mike Johnson",
+                    name_b: "David Chen",
+                    call_direction: "incoming",
+                    href: "http://localhost:8080/audio/a2",
+                },
+            };
+
+            // Return specific data for a1/a2, or default data for other IDs
+            return mockData[audioId as keyof typeof mockData] || {
+                time: new Date().toISOString(),
+                duration: 120,
+                entity_id: "truck-1",
+                side_a: "Driver",
+                side_b: "Dispatcher",
+                name_a: "Unknown",
+                name_b: "Unknown",
+                call_direction: "unknown",
+                href: `http://localhost:8080/audio/${audioId}`,
+            };
+        },
+    });
+
+export const getAudioEventMetadata = async (
+    queryClient: QueryClient,
+    audioId: string,
+) => {
+    return await queryClient.fetchQuery(audioEventMetadataQuery(audioId));
+};
+
+// Generic event (type: "event")
+export const eventMetadataQuery = (eventId: string) =>
+    queryOptions<{
+        entity_id: string;
+        time: string;
+        event_type: string;
+        href: string;
+    }>({
+        queryKey: ["event", eventId],
+        queryFn: async () => {
+            const mockData: Record<string, { entity_id: string; time: string; event_type: string; href: string }> = {
+                e1: {
+                    entity_id: "truck-1",
+                    time: "2024-01-01T12:00:00Z",
+                    event_type: "speeding",
+                    href: "http://localhost:8080/events/e1",
+                },
+                e2: {
+                    entity_id: "truck-2",
+                    time: "2024-01-01T11:38:27Z",
+                    event_type: "harsh_braking",
+                    href: "http://localhost:8080/events/e2",
+                },
+            };
+
+            return (
+                mockData[eventId] || {
+                    entity_id: "truck-1",
+                    time: new Date().toISOString(),
+                    event_type: "unknown",
+                    href: `http://localhost:8080/events/${eventId}`,
+                }
+            );
+        },
+    });
+
+export const getEventMetadata = async (queryClient: QueryClient, eventId: string) => {
+    return await queryClient.fetchQuery(eventMetadataQuery(eventId));
+};
+
+// Visual event (type: "visual")
+export const visualEventMetadataQuery = (visualId: string) =>
+    queryOptions<{
+        entity_id: string;
+        time: string;
+        event_type: string;
+        href: string;
+    }>({
+        queryKey: ["visual", visualId],
+        queryFn: async () => {
+            const mockData: Record<string, { entity_id: string; time: string; event_type: string; href: string }> = {
+                v1: {
+                    entity_id: "truck-3",
+                    time: "2024-01-01T15:10:00Z",
+                    event_type: "camera_snapshot",
+                    href: "http://localhost:8080/visual/v1",
+                },
+                v2: {
+                    entity_id: "truck-4",
+                    time: "2024-01-01T15:20:00Z",
+                    event_type: "dashcam_clip",
+                    href: "http://localhost:8080/visual/v2",
+                },
+            };
+
+            return (
+                mockData[visualId] || {
+                    entity_id: "truck-3",
+                    time: new Date().toISOString(),
+                    event_type: "visual",
+                    href: `http://localhost:8080/visual/${visualId}`,
+                }
+            );
+        },
+    });
+
+export const getVisualEventMetadata = async (queryClient: QueryClient, visualId: string) => {
+    return await queryClient.fetchQuery(visualEventMetadataQuery(visualId));
+};
+
+// Text event (type: "text")
+export const textEventMetadataQuery = (textId: string) =>
+    queryOptions<{
+        entity_id: string;
+        time: string;
+        event_type: string;
+        text: string;
+        href: string;
+    }>({
+        queryKey: ["text", textId],
+        queryFn: async () => {
+            const mockData: Record<string, { entity_id: string; time: string; event_type: string; text: string; href: string }> = {
+                t1: {
+                    entity_id: "truck-5",
+                    time: "2024-01-01T10:05:00Z",
+                    event_type: "note",
+                    text: "Driver reported traffic congestion on route.",
+                    href: "http://localhost:8080/text/t1",
+                },
+                t2: {
+                    entity_id: "truck-6",
+                    time: "2024-01-01T10:45:00Z",
+                    event_type: "system_message",
+                    text: "Maintenance reminder triggered.",
+                    href: "http://localhost:8080/text/t2",
+                },
+            };
+
+            return (
+                mockData[textId] || {
+                    entity_id: "truck-5",
+                    time: new Date().toISOString(),
+                    event_type: "text",
+                    text: "No details",
+                    href: `http://localhost:8080/text/${textId}`,
+                }
+            );
+        },
+    });
+
+export const getTextEventMetadata = async (queryClient: QueryClient, textId: string) => {
+    return await queryClient.fetchQuery(textEventMetadataQuery(textId));
+};
+
 export const groupSearchQuery = (query: string) =>
     queryOptions<{ [groupName: string]: Array<{ value: string; label: string }> }>({
         queryKey: ["groupSearch", query],
