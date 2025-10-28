@@ -40,113 +40,68 @@ export function PageSidebar({
     const [, _setCounter] = useState(0);
     const rerender = () => _setCounter((c) => c + 1);
 
-    const { toggleSidebar } = useSidebar();
     const { theme, setTheme } = useTheme();
 
     return (
-        <Sidebar side="right" collapsible="icon" dir="rtl">
-            <SidebarContent>
-                <SidebarHeader>
-                    <div className="flex items-center justify-between gap-1">
-                        <SidebarMenuItem className="w-full">
-                            <SidebarMenuButton
-                                size="lg"
-                                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                            >
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <TruckElectricIcon className="size-4" />
-                                </div>
-                                <div className="grid flex-1 text-right text-sm leading-tight">
-                                    <span className="truncate font-medium">
-                                        {import.meta.env.VITE_APP_NAME}
-                                    </span>
-                                    <span className="truncate text-xs">
-                                        {import.meta.env.VITE_APP_DESCRIPTION}
-                                    </span>
-                                </div>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <Button
-                            className="h-8 w-8"
-                            variant="ghost"
-                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        >
-                            {theme === "dark" ? (
-                                <Sun className="size-4" />
-                            ) : (
-                                <Moon className="size-4" />
-                            )}
-                        </Button>
-                        <SidebarTrigger className="group-data-[collapsible=icon]:visbile h-8 w-10 transition-transform group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:right-14">
-                            <PanelRight />
-                        </SidebarTrigger>
+        <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground p-2">
+            <div className="flex items-center justify-between gap-1 p-2">
+                <div className="flex items-center gap-2">
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                        <TruckElectricIcon className="size-4" />
                     </div>
-                </SidebarHeader>
-                <SidebarGroup>
-                    <SidebarGroupLabel>ישויות</SidebarGroupLabel>
-                    <SidebarGroupContent className="relative flex flex-col gap-2">
-                        <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
-                            <GroupSearch inputClassName="group-search-input" />
-                        </SidebarMenuItem>
-                        <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
-                            <SidebarMenuButton
-                                variant="outline"
-                                onClick={() => {
-                                    toggleSidebar();
-                                    setTimeout(() => {
-                                        document
-                                            ?.getElementsByClassName("group-search-input")
-                                            .item(0)
-                                            // @ts-expect-error HTMLInputElement
-                                            ?.focus();
-                                    }, 100);
-                                }}
-                            >
-                                <SearchIcon />
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <GeometrySelection map={map} draw={draw} />
-                        </SidebarMenuItem>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>מיקוד</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <DateRangePicker />
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                {import.meta.env.DEV && (
-                    <SidebarGroup>
-                        <SidebarGroupLabel>דיבוג</SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <SidebarMenuButton onClick={() => addRandomEntity(entities)}>
-                                        <BotIcon />
-                                        <div>add entity</div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                                <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
-                                    <SidebarMenuButton
-                                        onClick={() => {
-                                            entitiesCluster.setDistance(50);
-                                            rerender();
-                                        }}
-                                    >
-                                        <BotIcon />
-                                        <div>
-                                            change cluster distance -{" "}
-                                            {entitiesCluster.getDistance()}
-                                        </div>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                )}
-            </SidebarContent>
-            <SidebarRail />
-        </Sidebar>
+                    <div className="grid flex-1 text-right text-sm leading-tight">
+                        <span className="truncate font-medium">
+                            {import.meta.env.VITE_APP_NAME}
+                        </span>
+                    </div>
+                </div>
+                <Button
+                    className="h-8 w-8"
+                    variant="ghost"
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                    {theme === "dark" ? (
+                        <Sun className="size-4" />
+                    ) : (
+                        <Moon className="size-4" />
+                    )}
+                </Button>
+            </div>
+            <div className="flex flex-col gap-4 mt-4">
+                <div className="px-2">
+                    <GroupSearch inputClassName="group-search-input" />
+                </div>
+                <div className="px-2">
+                    <GeometrySelection map={map} draw={draw} />
+                </div>
+                <div className="px-2">
+                    <DateRangePicker />
+                </div>
+            </div>
+
+            {import.meta.env.DEV && (
+                <div className="mt-auto flex flex-col gap-2 p-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => addRandomEntity(entities)}
+                    >
+                        <BotIcon className="mr-2 size-4" />
+                        Add Entity
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            entitiesCluster.setDistance(
+                                entitiesCluster.getDistance() === 50 ? 10 : 50,
+                            );
+                            rerender();
+                        }}
+                    >
+                        <BotIcon className="mr-2 size-4" />
+                        Cluster: {entitiesCluster.getDistance()}
+                    </Button>
+                </div>
+            )}
+        </div>
     );
 }

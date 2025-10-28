@@ -34,18 +34,8 @@ export function PageDrawer({
     const [entityType, entityId] = focusedEntityId?.split("-", 2) ?? [];
 
     return (
-        <>
-            <Activity mode={focusedEntityId ? "hidden" : "visible"}>
-                <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
-                    <MasterTimeline
-                        mapStore={store}
-                        entities={entities}
-                        select={select}
-                        onFocusEntity={onFocusEntity}
-                    />
-                </div>
-            </Activity>
-            <Activity mode={focusedEntityId ? "visible" : "hidden"}>
+        <div className="h-full bg-card text-card-foreground">
+            {focusedEntityId ? (
                 <Tabs
                     className="mx-auto flex h-full max-w-4xl flex-col items-center justify-start p-4"
                     defaultValue="timeline"
@@ -56,7 +46,10 @@ export function PageDrawer({
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
                     <TabsContent value="timeline" className="h-[296px] p-2">
-                        <EntityTimeline enityId={entityId} entityType={entityType} />
+                        <EntityTimeline
+                            enityId={entityId}
+                            entityType={entityType}
+                        />
                     </TabsContent>
                     <TabsContent value="other-details" className="p-2">
                         <EntityDetails
@@ -70,7 +63,16 @@ export function PageDrawer({
                         <Skeleton className="mt-4 h-12 w-96" />
                     </TabsContent>
                 </Tabs>
-            </Activity>
-        </>
+            ) : (
+                <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
+                    <MasterTimeline
+                        mapStore={store}
+                        entities={entities}
+                        select={select}
+                        onFocusEntity={onFocusEntity}
+                    />
+                </div>
+            )}
+        </div>
     );
 }

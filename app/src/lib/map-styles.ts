@@ -1,21 +1,28 @@
 import type { FeatureLike } from "ol/Feature";
 import { Point } from "ol/geom";
-import { Style, Circle as CircleStyle, Fill, Stroke, Text, Icon } from "ol/style";
+import {
+    Style,
+    Circle as CircleStyle,
+    Fill,
+    Stroke,
+    Text,
+    Icon,
+} from "ol/style";
 import type { StyleLike } from "ol/style/Style";
 
 export const entityStyle = [
     new Style({
         image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "hsl(97 22% 40%)" }),
-            stroke: new Stroke({ color: "silver", width: 2 }),
+            fill: new Fill({ color: "hsl(147, 58%, 31%)" }), // New green color
+            stroke: new Stroke({ color: "hsl(226, 14%, 80%)", width: 2 }), // New light gray
         }),
         stroke: new Stroke({
-            color: "hsl(100 20% 35%)",
+            color: "hsl(147, 58%, 31%)",
             width: 2,
         }),
         fill: new Fill({
-            color: "hsl(100 20% 35% / 0.1)",
+            color: "hsla(147, 58%, 31%, 0.1)",
         }),
     }),
     new Style({
@@ -27,29 +34,36 @@ export const entityStyle = [
     }),
 ];
 
-export const unfocusedEntityStyle = [entityStyle[0].clone(), entityStyle[1].clone()];
+export const unfocusedEntityStyle = [
+    entityStyle[0].clone(),
+    entityStyle[1].clone(),
+];
 unfocusedEntityStyle.forEach((s) => s.getImage()?.setOpacity(0.3));
 
 export const selectedEntityStyle = new Style({
     image: new CircleStyle({
         radius: 10,
-        fill: new Fill({ color: "hsl(95 25% 45%)" }),
-        stroke: new Stroke({ color: "silver", width: 2 }),
+        fill: new Fill({ color: "hsl(147, 58%, 41%)" }), // Lighter green for selection
+        stroke: new Stroke({ color: "hsl(226, 14%, 80%)", width: 2 }),
     }),
     stroke: new Stroke({
-        color: "hsl(95 25% 45%)",
+        color: "hsl(147, 58%, 41%)",
         width: 2,
     }),
     fill: new Fill({
-        color: "hsl(95 25% 45% / 0.1)",
+        color: "hsla(147, 58%, 41%, 0.1)",
     }),
 });
 
 export const virtualEntityStyle = new Style({
     image: new CircleStyle({
         radius: 8,
-        fill: new Fill({ color: "hsl(97 22% 40% / 0.5)" }),
-        stroke: new Stroke({ color: "silver", width: 2, lineDash: [4, 4] }),
+        fill: new Fill({ color: "hsla(147, 58%, 31%, 0.5)" }),
+        stroke: new Stroke({
+            color: "hsl(226, 14%, 80%)",
+            width: 2,
+            lineDash: [4, 4],
+        }),
     }),
 });
 
@@ -66,7 +80,7 @@ export const clusterStyle: StyleLike = (feature: FeatureLike) => {
             image: new CircleStyle({
                 radius: 10,
                 fill: new Fill({
-                    color: `hsl(97 22% 40% / ${isDimmed ? 0.3 : 0.7})`,
+                    color: `hsla(147, 58%, 31%, ${isDimmed ? 0.3 : 0.7})`,
                 }),
             }),
         }),
@@ -74,7 +88,7 @@ export const clusterStyle: StyleLike = (feature: FeatureLike) => {
             image: new CircleStyle({
                 radius: 14,
                 fill: new Fill({
-                    color: `hsl(100 20% 35% / ${isDimmed ? 0.3 : 0.7})`,
+                    color: `hsla(147, 58%, 31%, ${isDimmed ? 0.3 : 0.7})`,
                 }),
             }),
             text: new Text({
@@ -89,7 +103,7 @@ export const clusterStyle: StyleLike = (feature: FeatureLike) => {
 
 const lineStyle = new Style({
     stroke: new Stroke({
-        color: "hsl(100 20% 35%)",
+        color: "hsl(147, 58%, 31%)",
         width: 2,
     }),
 });
@@ -98,7 +112,7 @@ const arrowHeadStyle = (x: number, y: number, rotation: number) =>
     new Style({
         geometry: new Point([x, y]),
         image: new Icon({
-            src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><polygon points="0,0 12,7 0,12" stroke="silver" fill="hsl(100 20% 35%)"/></svg>',
+            src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><polygon points="0,0 12,7 0,12" stroke="hsl(226, 14%, 80%)" fill="hsl(147, 58%, 31%)"/></svg>',
             // anchor: [0.75, 0.5],
             rotateWithView: true,
             rotation,
@@ -130,10 +144,10 @@ export function historyArrowStyle(feature: FeatureLike, _resolution: unknown) {
 
 export const drawnPolygonStyle = new Style({
     stroke: new Stroke({
-        color: "hsl(100 20% 35%)",
+        color: "hsl(147, 58%, 31%)",
         width: 2,
     }),
     fill: new Fill({
-        color: "hsl(100 20% 35% / 0.1)",
+        color: "hsla(147, 58%, 31%, 0.1)",
     }),
 });
