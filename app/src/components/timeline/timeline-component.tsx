@@ -34,29 +34,35 @@ export function TimelineComponent<T extends TimelineItem>({
 
     // Initialize timeline
     useEffect(() => {
-        if (containerRef.current && !timelineRef.current) {
-            const mergedOptions: Partial<TimelineOptions> = { ...options };
-            if (clusterTemplate) {
-                mergedOptions.cluster = { titleTemplate: clusterTemplate };
+        // Defer timeline creation to the next tick to avoid race conditions
+        // during component re-mounting (e.g., switching views). This allows
+        // the previous component's destroy() method to complete its DOM cleanup.
+        const timer = setTimeout(() => {
+            if (containerRef.current && !timelineRef.current) {
+                const mergedOptions: Partial<TimelineOptions> = { ...options };
+                if (clusterTemplate) {
+                    mergedOptions.cluster = { titleTemplate: clusterTemplate };
+                }
+
+                const newTimeline = new TimelineCore(
+                    containerRef.current,
+                    items,
+                    groups,
+                    mergedOptions
+                );
+
+                timelineRef.current = newTimeline;
+                setTimeline(newTimeline);
+
+                // Set initial marker if provided
+                if (initialMarker) {
+                    newTimeline.setOrAddMarker("marker", initialMarker);
+                }
             }
-
-            const newTimeline = new TimelineCore(
-                containerRef.current,
-                items,
-                groups,
-                mergedOptions
-            );
-
-            timelineRef.current = newTimeline;
-            setTimeline(newTimeline);
-
-            // Set initial marker if provided
-            if (initialMarker) {
-                newTimeline.setOrAddMarker("marker", initialMarker);
-            }
-        }
+        }, 0);
 
         return () => {
+            clearTimeout(timer);
             timelineRef.current?.destroy();
             timelineRef.current = null;
             setTimeline(null);

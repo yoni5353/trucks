@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import { DataSet } from "vis-data";
 import { Timeline, type TimelineEventPropertiesResult, type TimelineItem, type TimelineOptions } from "vis-timeline/esnext";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
@@ -13,7 +13,6 @@ export function MovieTimeline<T extends TimelineItem>({
     onClick,
     timelineOptions,
     clusterTemplate,
-    markerStart,
     onMarkerStartChange,
 }: {
     timelineRef?: RefObject<Timeline | null>;
