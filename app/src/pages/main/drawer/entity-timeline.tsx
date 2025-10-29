@@ -10,7 +10,8 @@ import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
 import type { EntityEvent, EventGroup } from "@/lib/types";
-import { focusedTimeStore, focusStore } from "../focus";
+import { focusedTimeStore } from "../focus";
+import { LoaderIcon } from "lucide-react";
 
 const EVENT_GROUPS = [
     {
@@ -98,7 +99,11 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     }
 
     if (!events) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex h-full animate-spin items-center">
+                <LoaderIcon />
+            </div>
+        );
     }
 
     return (
