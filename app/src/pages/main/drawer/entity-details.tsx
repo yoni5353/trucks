@@ -130,7 +130,7 @@ export function EntityDetails({
     }
 
     return (
-        <div className="p-4 mb-2">
+        <div className="p-4">
             <div className="flex gap-4 items-start mb-6">
                 <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 rounded-lg bg-primary/20">
                     <MapPin className="w-6 h-6 text-primary" />
