@@ -36,6 +36,7 @@ export function MovieTimeline<T extends TimelineItem>({
                 width: "100%",
                 height: "100%",
                 stack: false,
+                orientation: { axis: "top" },
                 zoomMin: 1000 * 60,
                 zoomMax: 1000 * 60 * 60 * 24 * 7,
                 start: new Date(Date.now() - 24 * 60 * 60 * 1000),
