@@ -44,6 +44,9 @@ export function MovieTimeline<T extends TimelineItem>({
                 multiselect: true,
                 moveable: false,
                 cluster,
+                orientation: {
+                    axis: "top",
+                },
                 snap: (date, _scale, _step) => {
                     const minute = 60 * 1000;
                     return Math.round(date.valueOf() / minute) * minute;
@@ -133,5 +136,5 @@ export function MovieTimeline<T extends TimelineItem>({
         });
     }, [onSelect, timeline, timelineRef]);
 
-    return <div dir="ltr" ref={containerRef} className="h-full w-[1000px]" />;
+    return <div dir="ltr" ref={containerRef} className="h-full w-[100vw]" />;
 }
