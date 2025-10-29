@@ -17,6 +17,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { truckDetailsQuery } from "@/lib/requests";
 import type { TruckDetails } from "@/lib/types";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 const TRANSLATIONS: Record<keyof TruckDetails | string, string> = {
     entity_id: "מזהה ישות",
@@ -129,6 +135,13 @@ export function EntityDetails({
         );
     }
 
+    const [identifiersGroup, ...otherGroups] = LAYOUT_CONFIG;
+
+    const handleCopyToClipboard = (value: string, label: string) => {
+        navigator.clipboard.writeText(value);
+        toast.success(`הערך ${label} הועתק ללוח`);
+    };
+
     return (
         <div className="p-4">
             <div className="flex gap-4 items-start mb-6">
@@ -144,16 +157,46 @@ export function EntityDetails({
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
-                {LAYOUT_CONFIG.map(group => (
-                    <div className="space-y-4 md:col-span-1">
-                        <div key={group.title} className="p-4 min-h-full rounded-lg bg-secondary/50">
-                            <div className="mb-2 font-medium text-muted-foreground">{group.title}</div>
-                            <div className="flex flex-col gap-2">
-                                {group.fields.map(key =>
-                                    details[key] ? <DetailItem key={key} pKey={key} label={TRANSLATIONS[key]} value={formatValue(key, details[key])} /> : null
-                                )}
-                            </div>
+            <div className="p-4 mb-4 rounded-lg bg-secondary/50">
+                <div className="mb-2 text-sm font-medium text-right text-muted-foreground">{identifiersGroup.title}</div>
+                <div className="flex flex-wrap gap-4 justify-center">
+                    {identifiersGroup.fields.map(key => {
+                        const value = details[key];
+                        const Icon = ICONS[key];
+                        if (!value || !Icon) return null;
+
+                        const label = TRANSLATIONS[key];
+                        const formattedValue = formatValue(key, value);
+
+                        return (
+                            <Tooltip key={key}>
+                                <TooltipTrigger asChild>
+                                    <div
+                                        className="flex gap-2 items-center p-2 rounded-md border cursor-pointer bg-background hover:border-primary/50"
+                                        onClick={() => handleCopyToClipboard(formattedValue, label)}
+                                    >
+                                        <Icon className="w-4 h-4 text-primary" />
+
+                                        <span className="font-mono text-sm">{formattedValue}</span>
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{label}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        );
+                    })}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
+                {otherGroups.map(group => (
+                    <div key={group.title} className="p-4 min-h-full rounded-lg bg-secondary/50">
+                        <div className="mb-2 font-medium text-muted-foreground">{group.title}</div>
+                        <div className="flex flex-col gap-2">
+                            {group.fields.map(key =>
+                                details[key] ? <DetailItem key={key} pKey={key} label={TRANSLATIONS[key]} value={formatValue(key, details[key])} /> : null
+                            )}
                         </div>
                     </div>
                 ))}
