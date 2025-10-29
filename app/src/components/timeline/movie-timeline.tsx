@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { DataSet } from "vis-data";
-import { Timeline, type TimelineItem, type TimelineOptions } from "vis-timeline/esnext";
+import { Timeline, type TimelineEventPropertiesResult, type TimelineItem, type TimelineOptions } from "vis-timeline/esnext";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import "./movie-timeline.css";
 
@@ -10,6 +10,7 @@ export function MovieTimeline<T extends TimelineItem>({
     items,
     groups,
     onSelect,
+    onClick,
     timelineOptions,
     clusterTemplate,
     markerStart,
@@ -19,6 +20,7 @@ export function MovieTimeline<T extends TimelineItem>({
     items: DataSet<T>;
     groups?: DataSet<object>;
     onSelect?: (itemIds: string[]) => void;
+    onClick?: (events: TimelineEventPropertiesResult) => void;
     timelineOptions?: TimelineOptions;
     clusterTemplate?: (props: { items: TimelineItem[]; group: { groupId: string } }) => [string];
     markerStart?: Date;
@@ -120,6 +122,14 @@ export function MovieTimeline<T extends TimelineItem>({
                     timeline.removeCustomTime(eventProps.customTime);
                 }
             });
+
+            console.log('adding click listener');
+            timeline.on("click", (properties) => {
+                console.log('click', properties);
+                const eventProps = timeline.getEventProperties(properties.event);
+                onClick?.(eventProps);
+            });
+
         }
 
         return () => {
@@ -131,10 +141,11 @@ export function MovieTimeline<T extends TimelineItem>({
 
     useEffect(() => {
         timeline?.on("select", (properties) => {
-            const eventProps = timeline.getEventProperties(properties.event);
             onSelect?.(properties.items);
         });
-    }, [onSelect, timeline, timelineRef]);
+
+        console.log('new timeline', timeline);
+    }, [onSelect, timeline, timelineRef, onClick]);
 
     return <div dir="ltr" ref={containerRef} className="h-full w-[100vw]" />;
 }
