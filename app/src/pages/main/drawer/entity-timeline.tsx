@@ -12,6 +12,7 @@ import { parametersStore } from "../parameters";
 import type { EntityEvent, EventGroup } from "@/lib/types";
 import { focusedTimeStore } from "../focus";
 import { LoaderIcon } from "lucide-react";
+import { RETRIEVAL_COLORS } from "@/consts/timeline-coloring";
 
 const EVENT_GROUPS = [
     {
@@ -94,13 +95,19 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     const items = useMemo(() => new DataSet(), []);
     if (events && items.getIds().length === 0) {
         for (const e of events) {
-            items.add(e);
+            const colors = RETRIEVAL_COLORS[e.retrievalType];
+            const style = `
+                background-color: ${colors.background};
+                border-color: ${colors.border};
+                color: ${colors.text};
+            `;
+            items.add({ ...e, style });
         }
     }
 
     if (!events) {
         return (
-            <div className="flex h-full animate-spin items-center">
+            <div className="flex items-center h-full animate-spin">
                 <LoaderIcon />
             </div>
         );
@@ -126,11 +133,11 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
             }}
             markerStart={focusedTime.start}
             onMarkerStartChange={focusedTime.setStart}
-            // onSelect={(itemIds) => {
-            //     const selected = items.get(itemIds);
-            //     const groupIds = new Set(selected.map((item) => item.group));
-            //     selectEntities(select, entities, groupIds);
-            // }}
+        // onSelect={(itemIds) => {
+        //     const selected = items.get(itemIds);
+        //     const groupIds = new Set(selected.map((item) => item.group));
+        //     selectEntities(select, entities, groupIds);
+        // }}
         />
     );
 }

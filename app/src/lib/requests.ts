@@ -46,27 +46,27 @@ export const eventsOfEntityQuery = (
             // prettier-ignore
             return events.concat(
                 [
-                    { id: "g1", group: "location", t: "point", coords: [34.7818, 31.0853], start: beforeXMinutes(250), },
-                    { id: "g2", group: "location", t: "point", coords: [34.7518, 31.143], start: beforeXMinutes(170), },
-                    { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(160), },
-                    { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(110) },
-                    { id: "g5", group: "location", t: "point", coords: [34.8, 31.28], start: beforeXMinutes(60) },
-                    { id: "gg1", group: "location", t: "loc", wkt: "POLYGON((34.7777 32.0846, 34.77929 32.0846, 34.77929 32.08595, 34.7777 32.08595, 34.7777 32.0846))", start: beforeXMinutes(50) },
-                    { id: "gg2", group: "location", t: "loc", wkt: "POLYGON((34.77949 32.0846, 34.78108 32.0846, 34.78108 32.08595, 34.77949 32.08595, 34.77949 32.0846))", start: beforeXMinutes(45) },
-                    { id: "gg3", group: "location", t: "loc", wkt: "POLYGON((34.78128 32.0846, 34.78287 32.0846, 34.78287 32.08595, 34.78128 32.08595, 34.78128 32.0846))", start: beforeXMinutes(40) },
-                    { id: "gg4", group: "location", t: "loc", wkt: "POLYGON((34.78307 32.0846, 34.78466 32.0846, 34.78466 32.08595, 34.78307 32.08595, 34.78307 32.0846))", start: beforeXMinutes(35) },
-                    { id: "gg5", group: "location", t: "loc", wkt: "POLYGON((34.78486 32.0846, 34.78645 32.0846, 34.78645 32.08595, 34.78486 32.08595, 34.78486 32.0846))", start: beforeXMinutes(30) },
-                    { id: "gg6", group: "location", t: "loc", wkt: "POLYGON((34.78665 32.0846, 34.78824 32.0846, 34.78824 32.08595, 34.78665 32.08595, 34.78665 32.0846))", start: beforeXMinutes(25) },
-                    { id: "gg7", group: "location", t: "loc", wkt: "POLYGON((34.78844 32.0846, 34.79003 32.0846, 34.79003 32.08595, 34.78844 32.08595, 34.78844 32.0846))", start: beforeXMinutes(20) },
-                    { id: "gg8", group: "location", t: "loc", wkt: "POLYGON((34.79023 32.0846, 34.79182 32.0846, 34.79182 32.08595, 34.79023 32.08595, 34.79023 32.0846))", start: beforeXMinutes(15) }
+                    { id: "g1", group: "location", t: "point", coords: [34.7818, 31.0853], start: beforeXMinutes(250), retrievalType: 'A'},
+                    { id: "g2", group: "location", t: "point", coords: [34.7518, 31.143], start: beforeXMinutes(170), retrievalType: 'A'},
+                    { id: "g3", group: "location", t: "point", coords: [34.7418, 31.153], start: beforeXMinutes(160), retrievalType: 'A'},
+                    { id: "g4", group: "location", t: "point", coords: [34.7618, 31.28], start: beforeXMinutes(110),  retrievalType: 'A' },
+                    { id: "g5", group: "location", t: "point", coords: [34.8, 31.28], start: beforeXMinutes(60), retrievalType: 'A' },
+                    { id: "gg1", group: "location", t: "loc", wkt: "POLYGON((34.7777 32.0846, 34.77929 32.0846, 34.77929 32.08595, 34.7777 32.08595, 34.7777 32.0846))", start: beforeXMinutes(50),  retrievalType: 'A' },
+                    { id: "gg2", group: "location", t: "loc", wkt: "POLYGON((34.77949 32.0846, 34.78108 32.0846, 34.78108 32.08595, 34.77949 32.08595, 34.77949 32.0846))", start: beforeXMinutes(45),  retrievalType: 'A' },
+                    { id: "gg3", group: "location", t: "loc", wkt: "POLYGON((34.78128 32.0846, 34.78287 32.0846, 34.78287 32.08595, 34.78128 32.08595, 34.78128 32.0846))", start: beforeXMinutes(40),  retrievalType: 'A' },
+                    { id: "gg4", group: "location", t: "loc", wkt: "POLYGON((34.78307 32.0846, 34.78466 32.0846, 34.78466 32.08595, 34.78307 32.08595, 34.78307 32.0846))", start: beforeXMinutes(35),  retrievalType: 'B' },
+                    { id: "gg5", group: "location", t: "loc", wkt: "POLYGON((34.78486 32.0846, 34.78645 32.0846, 34.78645 32.08595, 34.78486 32.08595, 34.78486 32.0846))", start: beforeXMinutes(30), retrievalType: 'A' },
+                    { id: "gg6", group: "location", t: "loc", wkt: "POLYGON((34.78665 32.0846, 34.78824 32.0846, 34.78824 32.08595, 34.78665 32.08595, 34.78665 32.0846))", start: beforeXMinutes(25),  retrievalType: 'A' },
+                    { id: "gg7", group: "location", t: "loc", wkt: "POLYGON((34.78844 32.0846, 34.79003 32.0846, 34.79003 32.08595, 34.78844 32.08595, 34.78844 32.0846))", start: beforeXMinutes(20),  retrievalType: 'A' },
+                    { id: "gg8", group: "location", t: "loc", wkt: "POLYGON((34.79023 32.0846, 34.79182 32.0846, 34.79182 32.08595, 34.79023 32.08595, 34.79023 32.0846))", start: beforeXMinutes(15),  retrievalType: 'A' }
                 ],
                 [
-                    { id: "a1", group: "audio", t: "audio", start: beforeXMinutes(210), end: beforeXMinutes(175), },
-                    { id: "a2", group: "audio", t: "audio", start: beforeXMinutes(100), end: beforeXMinutes(87), },
+                    { id: "a1", group: "audio", t: "audio", start: beforeXMinutes(210), end: beforeXMinutes(175), retrievalType: 'A' },
+                    { id: "a2", group: "audio", t: "audio", start: beforeXMinutes(100), end: beforeXMinutes(87), retrievalType: 'A' },
                 ],
                 [
-                    { id: "e1", group: "event", t: "event", what: "speeding", start: beforeXMinutes(210), end: beforeXMinutes(175), },
-                    { id: "e2", group: "event", t: "event", what: "harsh_braking", start: beforeXMinutes(100), end: beforeXMinutes(87), },
+                    { id: "e1", group: "event", t: "event", what: "speeding", start: beforeXMinutes(210), end: beforeXMinutes(175), retrievalType: 'A' },
+                    { id: "e2", group: "event", t: "event", what: "harsh_braking", start: beforeXMinutes(100), end: beforeXMinutes(87), retrievalType: 'A' },
                 ],
             );
         },
