@@ -1,8 +1,22 @@
 import { Button } from "@/components/ui/button";
-import { Crosshair, MapPin } from "lucide-react";
+import {
+    AppWindow,
+    CalendarClock,
+    Crosshair,
+    FileText,
+    Fingerprint,
+    Hash,
+    KeyRound,
+    MapPin,
+    Network,
+    Package,
+    Shield,
+    Truck,
+    type LucideIcon,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { truckDetailsQuery } from "@/lib/requests";
-import { TruckDetails } from "@/lib/types";
+import type { TruckDetails } from "@/lib/types";
 
 const TRANSLATIONS: Record<keyof TruckDetails | string, string> = {
     entity_id: "מזהה ישות",
@@ -19,6 +33,22 @@ const TRANSLATIONS: Record<keyof TruckDetails | string, string> = {
     last_seen: "נראה לאחרונה",
     first_id: "מזהה ראשוני",
     final_decription: "תיאור סופי",
+};
+
+const ICONS: Record<keyof TruckDetails | string, LucideIcon> = {
+    op_id: Shield,
+    number: Hash,
+    id_ei: KeyRound,
+    id_si: KeyRound,
+    mac: Network,
+    first_seen: CalendarClock,
+    last_seen: CalendarClock,
+    is_drive: Truck,
+    final_decription: FileText,
+    description: FileText,
+    app_id: AppWindow,
+    app_source: Package,
+    first_id: Fingerprint,
 };
 
 const LAYOUT_CONFIG: {
@@ -51,12 +81,18 @@ const formatValue = (key: keyof TruckDetails, value: any) => {
     return value;
 };
 
-const DetailItem = ({ label, value }: { label: string, value: string }) => (
-    <div className="flex gap-2 justify-between items-center">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-mono" dir="ltr">{value}</span>
-    </div>
-);
+const DetailItem = ({ pKey, label, value }: { pKey: keyof TruckDetails, label: string, value: string }) => {
+    const Icon = ICONS[pKey];
+    return (
+        <div className="flex gap-2 justify-between items-center">
+            <div className="flex gap-2 items-center">
+                {Icon ? <Icon className="w-4 h-4 text-muted-foreground" /> : <div className="w-4" />}
+                <span className="text-muted-foreground">{label}</span>
+            </div>
+            <span className="font-mono" dir="ltr">{value}</span>
+        </div>
+    );
+}
 
 export function EntityDetails({
     focusedEntityId,
@@ -93,10 +129,8 @@ export function EntityDetails({
         );
     }
 
-    const [identifiersGroup, ...otherGroups] = LAYOUT_CONFIG;
-
     return (
-        <div className="p-4">
+        <div className="p-4 mb-2">
             <div className="flex gap-4 items-start mb-6">
                 <div className="flex flex-shrink-0 justify-center items-center w-12 h-12 rounded-lg bg-primary/20">
                     <MapPin className="w-6 h-6 text-primary" />
@@ -110,28 +144,19 @@ export function EntityDetails({
                 </Button>
             </div>
 
-            <div className="space-y-4 text-sm">
-                <div className="p-4 rounded-lg bg-secondary/50">
-                    <div className="mb-2 font-medium text-muted-foreground">{identifiersGroup.title}</div>
-                    <div className="grid grid-cols-2 gap-2">
-                        {identifiersGroup.fields.map(key =>
-                            details[key] ? <DetailItem key={key} label={TRANSLATIONS[key]} value={formatValue(key, details[key])} /> : null
-                        )}
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {otherGroups.map(group => (
-                        <div key={group.title} className="p-4 rounded-lg bg-secondary/50">
+            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+                {LAYOUT_CONFIG.map(group => (
+                    <div className="space-y-4 md:col-span-1">
+                        <div key={group.title} className="p-4 min-h-full rounded-lg bg-secondary/50">
                             <div className="mb-2 font-medium text-muted-foreground">{group.title}</div>
                             <div className="flex flex-col gap-2">
                                 {group.fields.map(key =>
-                                    details[key] ? <DetailItem key={key} label={TRANSLATIONS[key]} value={formatValue(key, details[key])} /> : null
+                                    details[key] ? <DetailItem key={key} pKey={key} label={TRANSLATIONS[key]} value={formatValue(key, details[key])} /> : null
                                 )}
                             </div>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
