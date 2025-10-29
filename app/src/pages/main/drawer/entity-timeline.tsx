@@ -2,9 +2,9 @@ import { eventsOfEntityQuery } from "@/lib/requests";
 import { useQuery } from "@tanstack/react-query";
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
-import { MovieTimeline } from "../../../components/timeline/movie-timeline";
+import { TimelineComponent, type TimelineCore } from "../../../components/timeline";
 import { useEffect, useMemo, useRef } from "react";
-import { Timeline, type TimelineGroup } from "vis-timeline";
+import type { TimelineGroup } from "vis-timeline";
 import { MapPinned, Volume2, Image, Bot, LayoutList } from "lucide-static";
 import { intervalToDuration } from "date-fns";
 import { useStore } from "zustand";
@@ -45,28 +45,8 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     const timeRange = useStore(parametersStore, (s) => s.timeRange);
     const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId, timeRange));
 
-    const timelineRef = useRef<Timeline | null>(null);
-
-    // const focusedTimeStart = useStore(focusStore, (s) => s.focusedTimeStart);
-    // const setFocusedTimeStart = useStore(focusStore, (s) => s.setFocusedTimeStart);
+    const timelineRef = useRef<TimelineCore | null>(null);
     const focusedTime = useStore(focusedTimeStore);
-
-    useEffect(
-        function focusEventOnClick() {
-            if (timelineRef.current) {
-                timelineRef.current.on("click", (properties) => {
-                    const event = timelineRef.current?.getEventProperties(properties.event);
-                    // if (event && event.what === "group-label") {
-                    //     const groupId = event.group;
-                    //     if (groupId) {
-                    //         onFocusEntity(groupId.toString());
-                    //     }
-                    // }
-                });
-            }
-        },
-        [timelineRef, events],
-    );
 
     // Add buffers for edges of items
     const min = useMemo(() => new Date(timeRange.start.getTime() - 30 * 60 * 1000), [timeRange]);
@@ -74,20 +54,25 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
         () => new Date((timeRange.end?.getTime() ?? Date.now()) + 30 * 60 * 1000),
         [timeRange],
     );
-    useEffect(
-        function resizeTimelineWindowOnTimeRangeChange() {
-            if (timelineRef.current) {
-                // TOFIX: the cluster setting is forgotten here
-                // timelineRef.current.setOptions({
-                //     min,
-                //     start: min,
-                //     end: max,
-                //     max,
-                // });
-            }
-        },
-        [max, min, timeRange],
-    );
+
+    useEffect(() => {
+        const timeline = timelineRef.current;
+        if (!timeline) return;
+
+        const markerSub = timeline.events.on('markerChange').subscribe((payload) => {
+            focusedTime.setStart(payload.time);
+        });
+
+        // Example of how to handle clicks if needed in the future
+        // const clickSub = timeline.events.on('click').subscribe((payload) => {
+        //     console.log('click', payload.eventProperties);
+        // });
+
+        return () => {
+            markerSub.unsubscribe();
+            // clickSub.unsubscribe();
+        };
+    }, [focusedTime]);
 
     // LOAD DATA
     const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
@@ -100,18 +85,18 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
 
     if (!events) {
         return (
-            <div className="flex h-full animate-spin items-center">
+            <div className="flex items-center h-full animate-spin">
                 <LoaderIcon />
             </div>
         );
     }
 
     return (
-        <MovieTimeline
+        <TimelineComponent
             timelineRef={timelineRef}
             items={items}
             groups={groups}
-            timelineOptions={{
+            options={{
                 moveable: true,
                 min,
                 start: min,
@@ -124,13 +109,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
                     `<div style="display: flex; align-items: center; gap: 2px;">${items.length.toString()} ${EVENT_GROUPS.find((g) => g.id === group.groupId)?.clusterIcon}</div>`,
                 ];
             }}
-            markerStart={focusedTime.start}
-            onMarkerStartChange={focusedTime.setStart}
-            // onSelect={(itemIds) => {
-            //     const selected = items.get(itemIds);
-            //     const groupIds = new Set(selected.map((item) => item.group));
-            //     selectEntities(select, entities, groupIds);
-            // }}
+            initialMarker={focusedTime.start}
         />
     );
 }

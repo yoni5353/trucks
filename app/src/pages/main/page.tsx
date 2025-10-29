@@ -7,6 +7,7 @@ import {
     initMap,
     registerHistoryOfEntities,
     dimUnselectedEntities,
+    flyToEntity,
 } from "@/lib/map";
 import { OLMap } from "@/components/map/openlayers-map";
 import { PageDrawer } from "./drawer/page-drawer";
@@ -51,8 +52,7 @@ export default function Page() {
         dimUnselectedEntities(entities, id);
 
         if (id) {
-            setIsDrawerTransitioning(true);
-            drawerRef.current?.collapse();
+            flyToEntity(map, entities, id);
         }
     };
 
@@ -109,13 +109,13 @@ export default function Page() {
 
     return (
         <>
-            <SidebarProvider className="flex h-screen w-screen flex-col">
+            <SidebarProvider className="flex flex-col w-screen h-screen">
                 <SidebarInset>
                     <ResizablePanelGroup direction="vertical">
                         <ResizablePanel className="relative" order={1}>
                             <ResizablePanelGroup direction="horizontal">
                                 <ResizablePanel>
-                                    <div className="relative h-screen w-screen">
+                                    <div className="relative w-screen h-screen">
                                         <OLMap
                                             map={map}
                                             select={select}

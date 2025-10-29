@@ -5,6 +5,9 @@ import type { PageParameters } from "@/pages/main/parameters";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const url = import.meta.env.VITE_BE_URL || "http://localhost:8080";
 
+export const beforeXMinutes = (minutes: number) =>
+    new Date(Date.now() - minutes * 60 * 1000).toISOString();
+
 export const entitiesQuery = (parameters?: PageParameters) =>
     queryOptions({
         queryKey: ["entities", parameters],
@@ -39,8 +42,7 @@ export const eventsOfEntityQuery = (
     queryOptions<EntityEvent[]>({
         queryKey: ["events", entityType, entityId, timeRange],
         queryFn: async () => {
-            const beforeXMinutes = (minutes: number) =>
-                new Date(Date.now() - minutes * 60 * 1000).toISOString();
+
             const events: Array<EntityEvent> = [];
 
             // prettier-ignore
@@ -96,29 +98,30 @@ export const eventsQuery = queryOptions({
     },
 });
 
-export const getHighlightsQuery = queryOptions({
-    queryKey: ["highlights"],
-    queryFn: async () => {
-        // prettier-ignore
-        return [
-            { id: "event-1", entityIds: ["truck-1"], type: "speeding", timestamp: "2024-01-01T00:00:00Z", },
-            { id: "event-2", entityIds: ["truck-2"], type: "harsh_braking", timestamp: "2024-01-01T11:00:00Z", },
-            { id: "event-3", entityIds: ["truck-1"], type: "geofence_exit", timestamp: "2024-01-01T12:00:00Z", },
-            { id: "event-4", entityIds: ["truck-3"], type: "speeding", timestamp: "2024-01-01T19:00:00Z", },
-            { id: "event-5", entityIds: ["truck-2"], type: "harsh_acceleration", timestamp: "2024-01-01T14:00:00Z", timestampEnd: "2024-01-01T14:20:00Z", },
-            { id: "event-6", entityIds: ["truck-4"], type: "speeding", timestamp: "2024-01-01T16:00:00Z", },
-            { id: "event-7", entityIds: ["truck-5"], type: "harsh_braking", timestamp: "2024-01-01T17:00:00Z", },
-            { id: "event-8", entityIds: ["truck-6"], type: "geofence_exit", timestamp: "2024-01-01T18:00:00Z", },
-            { id: "event-9", entityIds: ["truck-4"], type: "speeding", timestamp: "2024-01-01T20:00:00Z", },
-            { id: "event-10", entityIds: ["truck-5"], type: "harsh_acceleration", timestamp: "2024-01-01T21:00:00Z", timestampEnd: "2024-01-01T21:20:00Z", },
-            { id: "event-12", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T23:00:00Z", },
-            { id: "event-13", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T12:00:00Z", },
-            { id: "event-14", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T11:30:00Z", },
-            { id: "event-15", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T12:15:00Z", },
-            { id: "event-16", entityIds: ["truck-7"], type: "speeding", timestamp: "2024-01-01T13:00:00Z", },
+export const getHighlightsQuery = (timeRange?: PageParameters["timeRange"]) =>
+    queryOptions({
+        queryKey: ["highlights", timeRange],
+        queryFn: async () => {
+            // prettier-ignore
+            return [
+            { id: "event-1", entityIds: ["truck-1"], type: "speeding", timestamp: beforeXMinutes(280), },
+            { id: "event-2", entityIds: ["truck-2"], type: "harsh_braking", timestamp: beforeXMinutes(220), },
+            { id: "event-3", entityIds: ["truck-1"], type: "geofence_exit", timestamp: beforeXMinutes(200), },
+            { id: "event-4", entityIds: ["truck-3"], type: "speeding", timestamp: beforeXMinutes(180), },
+            { id: "event-5", entityIds: ["truck-2"], type: "harsh_acceleration", timestamp: beforeXMinutes(160), timestampEnd: beforeXMinutes(150), },
+            { id: "event-6", entityIds: ["truck-4"], type: "speeding", timestamp: beforeXMinutes(140), },
+            { id: "event-7", entityIds: ["truck-5"], type: "harsh_braking", timestamp: beforeXMinutes(120), },
+            { id: "event-8", entityIds: ["truck-6"], type: "geofence_exit", timestamp: beforeXMinutes(100), },
+            { id: "event-9", entityIds: ["truck-30"], type: "speeding", timestamp: beforeXMinutes(80), },
+            { id: "event-10", entityIds: ["truck-300"], type: "harsh_acceleration", timestamp: beforeXMinutes(60), timestampEnd: beforeXMinutes(50), },
+            { id: "event-12", entityIds: ["truck-493"], type: "speeding", timestamp: beforeXMinutes(40), },
+            { id: "event-13", entityIds: ["truck-493"], type: "speeding", timestamp: beforeXMinutes(30), },
+            { id: "event-14", entityIds: ["truck-499"], type: "speeding", timestamp: beforeXMinutes(25), },
+            { id: "event-15", entityIds: ["truck-493"], type: "speeding", timestamp: beforeXMinutes(20), },
+            { id: "event-16", entityIds: ["truck-493"], type: "speeding", timestamp: beforeXMinutes(10), },
         ];
-    },
-});
+        },
+    });
 
 export const groupSearchQuery = (query: string) =>
     queryOptions<{ [groupName: string]: Array<{ value: string; label: string }> }>({

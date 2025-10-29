@@ -30,6 +30,18 @@ export function OLMap({
         if (mapRef.current) {
             map.setTarget(mapRef.current);
 
+            map.on('click', (e) => {
+                // Check if the click is on a feature
+                const features = map.getFeaturesAtPixel(e.pixel);
+                // If not, clear the selection and hide the tooltip
+                if (features.length === 0) {
+                    select?.getFeatures().clear();
+                    tooltipInstanceRef.current?.setPosition(undefined);
+                    setTooltipEntityId(undefined);
+                    onViewEntity(undefined);
+                }
+            });
+
             // Init tooltip
             const tooltip = new Overlay({
                 element: tooltipRef.current!,
@@ -67,35 +79,35 @@ export function OLMap({
 
     return (
         <>
-            <div ref={mapRef} className="h-full w-full overflow-hidden" />
-            <div ref={tooltipRef} className="tooltip-thing absolute text-primary">
+            <div ref={mapRef} className="overflow-hidden w-full h-full" />
+            <div ref={tooltipRef} className="absolute tooltip-thing text-primary">
                 <div
                     className={cn(
-                        `absolute -translate-x-1/2 transition-all duration-300`,
+                        `absolute transition-all duration-300 -translate-x-1/2`,
                         tooltipEntityId
-                            ? "pointer-events-auto translate-y-0 opacity-100"
-                            : "pointer-events-none translate-y-2 opacity-0",
+                            ? "opacity-100 translate-y-0 pointer-events-auto"
+                            : "opacity-0 translate-y-2 pointer-events-none",
                     )}
                 >
-                    <div className="flex gap-2 rounded-xl border border-border bg-card p-2 shadow-2xl backdrop-blur-sm">
+                    <div className="flex gap-2 p-2 rounded-xl border shadow-2xl backdrop-blur-sm border-border bg-card">
                         <Button
                             size="sm"
                             variant="ghost"
-                            className="h-9 w-9 p-0"
+                            className="p-0 w-9 h-9"
                             onClick={() => tooltipEntityId && onViewEntity(tooltipEntityId)}
                         >
-                            <Eye className="h-4 w-4" />
+                            <Eye className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-9 w-9 p-0">
-                            <CopyIcon className="h-4 w-4" />
+                        <Button size="sm" variant="ghost" className="p-0 w-9 h-9">
+                            <CopyIcon className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" className="h-9 w-9 p-0">
-                            <Download className="h-4 w-4" />
+                        <Button size="sm" variant="ghost" className="p-0 w-9 h-9">
+                            <Download className="w-4 h-4" />
                         </Button>
                     </div>
                     {/* Arrow pointing down */}
                     <div className="absolute left-1/2 top-full -mt-[5px] -translate-x-1/2">
-                        <div className="h-3 w-3 rotate-45 border-b border-r border-border bg-card" />
+                        <div className="w-3 h-3 border-r border-b rotate-45 border-border bg-card" />
                     </div>
                 </div>
             </div>

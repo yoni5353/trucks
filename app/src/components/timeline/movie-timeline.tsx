@@ -123,9 +123,7 @@ export function MovieTimeline<T extends TimelineItem>({
                 }
             });
 
-            console.log('adding click listener');
             timeline.on("click", (properties) => {
-                console.log('click', properties);
                 const eventProps = timeline.getEventProperties(properties.event);
                 onClick?.(eventProps);
             });
