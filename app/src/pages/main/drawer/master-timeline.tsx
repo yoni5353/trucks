@@ -1,4 +1,4 @@
-import { getHighlightsQuery } from "@/lib/requests";
+import { entitiesQuery, getHighlightsQuery } from "@/lib/requests";
 import { useQuery } from "@tanstack/react-query";
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
@@ -29,12 +29,20 @@ export function MasterTimeline({
     select: Select;
     onFocusEntity?: (entityId: string) => void;
 }) {
-    const timeRange = useStore(parametersStore, (s) => s.timeRange);
-    const { data: events } = useQuery(getHighlightsQuery(timeRange));
+    const parameters = useStore(parametersStore);
+
+    const { data: events } = useQuery(getHighlightsQuery(parameters.timeRange));
+    const { data: entitiesData } = useQuery(entitiesQuery(parameters));
     const [timeline, setTimeline] = useState<TimelineCore | null>(null);
 
     const items = useMemo(() => new DataSet<TimelineItem>(), []);
-    const groups = useMemo(() => new DataSet(), []);
+    const groups = useMemo(() => {
+        return new DataSet<object>(entitiesData?.map((entity) => ({
+            id: entity.id,
+            order: parseInt(entity.id.split("-")[1] ?? "0"),
+            content: createGroupContent(entity.id),
+        })) || []);
+    }, [entitiesData]);
 
     useEffect(() => {
         if (events) {
@@ -50,48 +58,6 @@ export function MasterTimeline({
         }
     }, [events, items]);
 
-    useEffect(() => {
-        const syncGroups = () => {
-            const features = entities.getFeatures();
-            const featureIds = new Set(features.map((f) => f.getId()?.toString()).filter(Boolean));
-            const currentGroupIds = new Set(groups.getIds().map(String));
-
-            const groupsToAdd = features
-                .filter((feature) => feature.getId() && !currentGroupIds.has(feature.getId()!.toString()))
-                .map((feature) => {
-                    const entityId = feature.getId()!.toString();
-                    return {
-                        id: entityId,
-                        order: parseInt(entityId.split("-")[1] ?? "0"),
-                        content: createGroupContent(entityId),
-                    };
-                });
-
-            if (groupsToAdd.length > 0) {
-                groups.add(groupsToAdd);
-            }
-
-            const groupsToRemove = Array.from(currentGroupIds).filter((id) => !featureIds.has(id));
-
-            if (groupsToRemove.length > 0) {
-                groups.remove(groupsToRemove);
-            }
-        };
-
-        syncGroups();
-
-        entities.on("addfeature", syncGroups);
-        entities.on("removefeature", syncGroups);
-        entities.on("clear", syncGroups);
-
-        return () => {
-            entities.un("addfeature", syncGroups);
-            entities.un("removefeature", syncGroups);
-            entities.un("clear", syncGroups);
-        };
-    }, [entities, groups]);
-
-    // Setup timeline event subscriptions
     useEffect(() => {
         if (!timeline) return;
 
@@ -117,7 +83,6 @@ export function MasterTimeline({
         };
     }, [timeline, items, select, entities, onFocusEntity]);
 
-    // Map store subscription
     useEffect(() => {
         const unsubscribe = mapStore.subscribe((state, prev) => {
             if (state.selectedEntities !== prev.selectedEntities) {
