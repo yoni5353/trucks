@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataSet } from "vis-data";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { TimelineComponent, type TimelineCore } from "../../../components/timeline";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TimelineGroup } from "vis-timeline";
 import { MapPinned, Volume2, Image, Bot, LayoutList } from "lucide-static";
 import { intervalToDuration } from "date-fns";
@@ -45,7 +45,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     const timeRange = useStore(parametersStore, (s) => s.timeRange);
     const { data: events } = useQuery(eventsOfEntityQuery(entityType, enityId, timeRange));
 
-    const timelineRef = useRef<TimelineCore | null>(null);
+    const [timeline, setTimeline] = useState<TimelineCore | null>(null);
     const focusedTime = useStore(focusedTimeStore);
 
     // Add buffers for edges of items
@@ -56,7 +56,6 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
     );
 
     useEffect(() => {
-        const timeline = timelineRef.current;
         if (!timeline) return;
 
         const markerSub = timeline.events.on('markerChange').subscribe((payload) => {
@@ -72,7 +71,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
             markerSub.unsubscribe();
             // clickSub.unsubscribe();
         };
-    }, [focusedTime]);
+    }, [focusedTime, timeline]);
 
     // LOAD DATA
     const groups = useMemo(() => new DataSet(EVENT_GROUPS), []);
@@ -93,7 +92,7 @@ export function EntityTimeline({ enityId, entityType }: { enityId: string; entit
 
     return (
         <TimelineComponent
-            timelineRef={timelineRef}
+            onReady={setTimeline}
             items={items}
             groups={groups}
             options={{

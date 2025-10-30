@@ -6,7 +6,7 @@ import { TimelineComponent, TimelineCore } from "../../../components/timeline";
 import type { Select } from "ol/interaction";
 import type VectorSource from "ol/source/Vector";
 import { selectEntities, type MapStore } from "@/lib/map";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TimelineItem } from "vis-timeline";
 import { ShieldX, SquareKanban } from "lucide-static";
 import { sameValues } from "@/lib/utils";
@@ -31,7 +31,7 @@ export function MasterTimeline({
 }) {
     const timeRange = useStore(parametersStore, (s) => s.timeRange);
     const { data: events } = useQuery(getHighlightsQuery(timeRange));
-    const timelineRef = useRef<TimelineCore | null>(null);
+    const [timeline, setTimeline] = useState<TimelineCore | null>(null);
 
     const items = useMemo(() => new DataSet<TimelineItem>(), []);
     const groups = useMemo(() => new DataSet(), []);
@@ -93,7 +93,6 @@ export function MasterTimeline({
 
     // Setup timeline event subscriptions
     useEffect(() => {
-        const timeline = timelineRef.current;
         if (!timeline) return;
 
         const selectSub = timeline.events.on('select')
@@ -116,14 +115,14 @@ export function MasterTimeline({
             selectSub.unsubscribe();
             clickSub.unsubscribe();
         };
-    }, [items, select, entities, onFocusEntity]);
+    }, [timeline, items, select, entities, onFocusEntity]);
 
     // Map store subscription
     useEffect(() => {
         const unsubscribe = mapStore.subscribe((state, prev) => {
             if (state.selectedEntities !== prev.selectedEntities) {
                 if (state.selectedEntities.length === 0) {
-                    timelineRef.current?.setSelection([]);
+                    timeline?.setSelection([]);
                     return;
                 }
                 const relatedEventsIds = events
@@ -133,9 +132,9 @@ export function MasterTimeline({
                         ),
                     )
                     .map((e) => e.id);
-                const currentSelection = timelineRef.current?.getSelection() || [];
+                const currentSelection = timeline?.getSelection() || [];
                 if (relatedEventsIds && !sameValues(relatedEventsIds, currentSelection)) {
-                    timelineRef.current?.setSelection(relatedEventsIds);
+                    timeline?.setSelection(relatedEventsIds);
                 }
             }
         });
@@ -143,7 +142,7 @@ export function MasterTimeline({
         return () => {
             unsubscribe();
         };
-    }, [mapStore, events]);
+    }, [mapStore, events, timeline]);
 
     if (!events) {
         return <div>Loading...</div>;
@@ -151,7 +150,7 @@ export function MasterTimeline({
 
     return (
         <TimelineComponent
-            timelineRef={timelineRef}
+            onReady={setTimeline}
             items={items}
             groups={groups}
             options={{ verticalScroll: true }}
