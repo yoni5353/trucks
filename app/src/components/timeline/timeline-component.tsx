@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { DataSet } from "vis-data";
 import type { TimelineItem, TimelineOptions } from "vis-timeline/esnext";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
-import "./movie-timeline.css";
+import "./timeline-component.css";
 import { TimelineCore } from './timeline-core';
 
 export interface TimelineComponentProps<T extends TimelineItem> {

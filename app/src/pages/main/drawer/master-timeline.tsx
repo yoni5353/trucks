@@ -52,7 +52,7 @@ export function MasterTimeline({
                 content: `${ShieldX}`,
                 start: event.timestamp,
                 end: event.timestampEnd,
-                group: event.entityIds[0],
+                group: event.entityIds[0].split('-')[1],
             }));
             items.add(newItems);
         }
