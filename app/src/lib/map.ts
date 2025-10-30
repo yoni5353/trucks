@@ -17,9 +17,10 @@ import {
     drawnPolygonStyle,
 } from "./map-styles";
 import { getTileLayers } from "./rasters";
-import type { GeographicEvent } from "./types";
+import type { GeographicEvent, XterEntity } from "./types";
 import { WKT } from "ol/format";
 import { getCenter } from "ol/extent";
+import { getFeatureId } from "./utils";
 
 // Feature Ids Breakdown:
 // - Entities: Regular entities on the map
@@ -149,13 +150,13 @@ export function addRandomEntity(source: VectorSource) {
 
 export function addEntities(
     source: VectorSource,
-    entities: Array<{ type: string; id: string | number; location: number[] }>,
+    entities: Array<XterEntity>,
 ) {
     const features = entities.map((entity) => {
         const feature = new Feature({
             geometry: new Point(fromLonLat([entity.location[0], entity.location[1]])),
         });
-        feature.setId(`${entity.type}-${entity.id}`);
+        feature.setId(getFeatureId(entity));
         feature.setStyle(entityStyle);
         return feature;
     });
@@ -173,8 +174,8 @@ export function selectEntities(select: Select, source: VectorSource, entitiesIds
     });
 }
 
-export function flyToEntity(map: Map, entities: VectorSource, entityId: string) {
-    const geometry = entities.getFeatureById(entityId)?.getGeometry();
+export function flyToEntity(map: Map, entities: VectorSource, featureId: string) {
+    const geometry = entities.getFeatureById(featureId)?.getGeometry();
     if (!geometry) return;
     map?.getView().fit(geometry, {
         duration: 1000,

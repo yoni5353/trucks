@@ -2,6 +2,12 @@ import type { TimelineItem } from "vis-timeline";
 
 export type EventGroup = "location" | "audio" | "visual" | "text" | "event";
 
+export type XterEntity = {
+    type: string;
+    id: string;
+    location: [number, number]
+}
+
 export type EntityEvent = Omit<TimelineItem, "content"> & {
     id: string;
     group: string;

@@ -7,11 +7,13 @@ import type { Select } from "ol/interaction";
 import type VectorSource from "ol/source/Vector";
 import { selectEntities, type MapStore } from "@/lib/map";
 import { useEffect, useMemo, useState } from "react";
-import type { TimelineItem } from "vis-timeline";
+import type { TimelineGroup, TimelineItem } from "vis-timeline";
 import { ShieldX, SquareKanban } from "lucide-static";
-import { sameValues } from "@/lib/utils";
+import { getFeatureId, sameValues } from "@/lib/utils";
 import { useStore } from "zustand";
 import { parametersStore } from "../parameters";
+
+type TimelineGroupWithFeatureId = TimelineGroup & { featureId: string };
 
 const createGroupContent = (entityId: string) => {
     return `<div class="flex gap-3 justify-center items-center px-4"><div class="w-2 scale-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="tabler-icon tabler-icon-circle-check-filled fill-green-500 dark:fill-green-400"><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z"></path></svg></div>${entityId}
@@ -37,9 +39,10 @@ export function MasterTimeline({
 
     const items = useMemo(() => new DataSet<TimelineItem>(), []);
     const groups = useMemo(() => {
-        return new DataSet<object>(entitiesData?.map((entity) => ({
+        return new DataSet<TimelineGroupWithFeatureId>(entitiesData?.map((entity) => ({
             id: entity.id,
-            order: parseInt(entity.id.split("-")[1] ?? "0"),
+            featureId: getFeatureId(entity),
+            order: parseInt(entity.id),
             content: createGroupContent(entity.id),
         })) || []);
     }, [entitiesData]);
@@ -73,7 +76,12 @@ export function MasterTimeline({
         const clickSub = timeline.events.on('click')
             .subscribe((payload) => {
                 if (onFocusEntity && payload.eventProperties.what === "group-label" && payload.eventProperties.group) {
-                    onFocusEntity(payload.eventProperties.group.toString());
+                    const group = groups.get(payload.eventProperties.group.toString());
+                    if (!group) {
+                        return;
+                    }
+
+                    onFocusEntity(group.featureId);
                 }
             });
 
