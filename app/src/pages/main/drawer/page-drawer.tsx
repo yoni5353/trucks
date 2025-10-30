@@ -3,7 +3,6 @@ import { flyToEntity, type MapStore } from "@/lib/map";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { EntityDetails } from "./entity-details";
-import { Skeleton } from "@/components/ui/skeleton";
 import { MasterTimeline } from "@/pages/main/drawer/master-timeline";
 import type { Select } from "ol/interaction";
 import type VectorSource from "ol/source/Vector";
@@ -47,7 +46,7 @@ export function PageDrawer({
             </Activity>
             <Activity mode={focusedEntityId ? "visible" : "hidden"}>
                 <Tabs
-                    className="flex flex-col justify-start items-center p-4 mx-auto max-w-4xl h-full"
+                    className="flex relative flex-col justify-start items-center p-4 mx-auto max-w-4xl h-full"
                     defaultValue="timeline"
                     dir="rtl"
                 >
@@ -58,16 +57,11 @@ export function PageDrawer({
                     <TabsContent value="timeline" className="h-[296px] p-2">
                         <EntityTimeline enityId={entityId} entityType={entityType} />
                     </TabsContent>
-                    <TabsContent value="other-details" className="p-2">
+                    <TabsContent value="other-details" className="overflow-y-auto flex-1 p-2">
                         <EntityDetails
-                            focusedEntityId={focusedEntityId}
+                            focusedEntityId={focusedEntityId!}
                             onFocus={focusCurrentEntity}
                         />
-                        <div className="flex gap-4">
-                            <Skeleton className="mt-4 w-28 h-12" />
-                            <Skeleton className="mt-4 w-64 h-12" />
-                        </div>
-                        <Skeleton className="mt-4 w-96 h-12" />
                     </TabsContent>
                 </Tabs>
             </Activity>

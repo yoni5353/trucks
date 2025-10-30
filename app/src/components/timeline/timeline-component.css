@@ -110,8 +110,7 @@
     transform: translateX(-50%);
     width: 10px;
     height: 6px;
-    background-image:
-        linear-gradient(
+    background-image: linear-gradient(
             to bottom,
             transparent 0%,
             transparent 33%,
