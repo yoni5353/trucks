@@ -109,3 +109,17 @@ export const groupSearchQuery = (query: string) =>
             };
         },
     });
+
+// Mock truck details data for use in UI components
+export const truckDetails = [
+    { entity_id: "1", op_id: "OP-001", is_drive: "true", description: "Long-haul tractor", number: "TRK-001", id_ei: "EI-0001", id_si: "SI-0001", mac: "00:1A:2B:3C:4D:01", app_id: "telemetry-v1", app_source: "simulator", first_seen: "2025-10-20T08:00:00Z", last_seen: "2025-10-28T10:30:00Z", first_id: "F-0001", final_decription: "Delivered to Depot A" },
+    { entity_id: "2", op_id: "OP-002", is_drive: "false", description: "Refrigerated box truck", number: "TRK-002", id_ei: "EI-0002", id_si: "SI-0002", mac: "00:1A:2B:3C:4D:02", app_id: "telemetry-v1", app_source: "edge-device", first_seen: "2025-10-18T06:15:00Z", last_seen: "2025-10-28T09:45:00Z", first_id: "F-0002", final_decription: "Maintenance scheduled" },
+    { entity_id: "3", op_id: "OP-003", is_drive: "true", description: "Flatbed carrier", number: "TRK-003", id_ei: "EI-0003", id_si: "SI-0003", mac: "00:1A:2B:3C:4D:03", app_id: "telemetry-v2", app_source: "simulator", first_seen: "2025-10-10T12:00:00Z", last_seen: "2025-10-28T11:05:00Z", first_id: "F-0003", final_decription: "Assigned to Route 7" },
+];
+
+// Query helper to get details for a specific entity
+export const truckDetailsQuery = (entityId: string) =>
+    queryOptions<typeof truckDetails[number] | undefined>({
+        queryKey: ["truckDetails", entityId],
+        queryFn: async () => truckDetails.find((d) => d.entity_id === entityId),
+    });
