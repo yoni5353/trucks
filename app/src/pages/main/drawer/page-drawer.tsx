@@ -35,7 +35,7 @@ export function PageDrawer({
     return (
         <>
             <Activity mode={focusedEntityId ? "hidden" : "visible"}>
-                <div className="mr-24 flex h-full items-center justify-center p-4 py-6">
+                <div className="flex justify-center items-center p-4 py-6 mr-24 h-full">
                     <MasterTimeline
                         mapStore={store}
                         entities={entities}
@@ -46,18 +46,18 @@ export function PageDrawer({
             </Activity>
             <Activity mode={focusedEntityId ? "visible" : "hidden"}>
                 <Tabs
-                    className="mx-auto flex h-full max-w-4xl flex-col items-center justify-start p-4"
+                    className="flex relative flex-col justify-start items-center p-4 mx-auto max-w-4xl h-full"
                     defaultValue="timeline"
                     dir="rtl"
                 >
-                    <TabsList className="h-min w-min bg-secondary/50">
+                    <TabsList className="w-min h-min bg-secondary/50">
                         <TabsTrigger value="timeline">ציר זמן</TabsTrigger>
                         <TabsTrigger value="other-details">פירוט</TabsTrigger>
                     </TabsList>
                     <TabsContent value="timeline" className="h-[296px] p-2">
                         <EntityTimeline enityId={entityId} entityType={entityType} />
                     </TabsContent>
-                    <TabsContent value="other-details" className="p-2 flex-1 overflow-y-auto">
+                    <TabsContent value="other-details" className="overflow-y-auto flex-1 p-2">
                         <EntityDetails
                             focusedEntityId={focusedEntityId!}
                             onFocus={focusCurrentEntity}

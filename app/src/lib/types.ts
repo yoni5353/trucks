@@ -7,6 +7,7 @@ export type EntityEvent = Omit<TimelineItem, "content"> & {
     group: string;
     start: string;
     end?: string;
+    retrievalType: 'A' | 'B' | 'C';
 } & (
         | {
               t: "point";
